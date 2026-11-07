@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuickCart</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 16px; color: #1a1a2e; }
+    h1 { font-size: 22px; } .price { color: #555; }
+    .product { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+    button { cursor: pointer; padding: 4px 12px; }
+    .cart { margin-top: 24px; background: #f6f7fb; border-radius: 8px; padding: 16px; }
+    .cart input { padding: 6px; margin-right: 8px; }
+    #result { margin-top: 12px; font-weight: 600; min-height: 20px; }
+    .error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <h1>QuickCart</h1>
+  <div id="products"></div>
+  <div class="cart">
+    <strong>Cart:</strong> <span id="cart-summary">empty</span>
+    <div style="margin-top:10px">
+      <input id="code" placeholder="Discount code (e.g. SAVE20)" />
+      <button onclick="checkout()">Checkout</button>
+    </div>
+    <div id="result"></div>
+  </div>
+  <script>
+    let products = [];
+    const cart = {};
+    fetch('/api/products').then(r => r.json()).then(list => {
+      products = list;
+      document.getElementById('products').innerHTML = list.map(p =>
+        `<div class="product"><span>${p.name} <span class="price">$${p.price.toFixed(2)} · ${p.stock} in stock</span></span>
+         <button onclick="add('${p.id}')">Add</button></div>`).join('');
+    });
+    function add(id) { cart[id] = (cart[id] || 0) + 1; render(); }
+    function render() {
+      const keys = Object.keys(cart);
+      document.getElementById('cart-summary').textContent =
+        keys.length ? keys.map(id => `${id} ×${cart[id]}`).join(', ') : 'empty';
+    }
+    async function checkout() {
+      const items = Object.keys(cart).map(id => ({ id, qty: cart[id] }));
+      const res = await fetch('/api/checkout', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, discountCode: document.getElementById('code').value.trim() || null }),
+      });
+      const data = await res.json();
+      const el = document.getElementById('result');
+      if (res.ok) el.textContent = `✅ ${data.orderId} charged $${data.total}` + (data.discountApplied ? ` (code ${data.discountApplied})` : '');
+      else { el.textContent = '❌ ' + data.error; el.classList.add('error'); }
+    }
+  </script>
+</body>
+</html>
