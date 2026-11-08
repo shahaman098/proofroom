@@ -55,10 +55,7 @@ app.post('/api/checkout', (req, res) => {
   const afterDiscountCents = Math.round(calculateTotal(priced, discountCode) * 100);
   const discountCents = subtotalCents - afterDiscountCents;
 
-  // BUG #4 (seeded): tax is computed on the PRE-discount subtotal, so any
-  // discounted customer in a taxed region (DE/UK/FR/US) is overcharged.
-  // Correct ordering: apply the discount first, then tax the discounted amount.
-  const taxCents = computeTax(subtotalCents, region);
+  const taxCents = computeTax(afterDiscountCents, region);
   const shippingCents = computeShipping(afterDiscountCents, weightGrams);
   const grandTotalCents = afterDiscountCents + taxCents + shippingCents;
 
