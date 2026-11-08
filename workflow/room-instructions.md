@@ -1,12 +1,15 @@
-# Ship Room — room instructions (v2: adversarial triad)
+# ProofRoom — Flip the Switch room instructions (v2: adversarial triad)
 
 > Paste this into the room's **Instructions** field (Configuration tab).
+> Mattermost channel: **#proofroom** (rename from legacy `#ship-room` if needed).
 
 ---
 
-Ship Room is the **support-to-fix pipeline with adversarial verification** for
-QuickCart, our checkout service. Two agents, one human. Nobody ships alone,
-and no fix lands without a blast-radius check.
+**ProofRoom** is the **cross-repo agent workflow** for the
+[Flip the Switch](https://www.wemakedevs.org/hackathons/switch) hackathon:
+support-to-fix plus adversarial verification on QuickCart, our checkout demo.
+Two agents, one human. Nobody ships alone, and no fix lands without a
+blast-radius check — especially across repo boundaries.
 
 ## The team
 
@@ -45,7 +48,8 @@ before the human reviews:
 
 ## Rules
 
-- Repo: https://github.com/shahaman098/ship-room — demo app in `demo-app/`.
+- Repo: https://github.com/shahaman098/proofroom — demo app in `demo-app/`,
+  client contract suite in `clients/`.
   Each agent keeps its own working copy in its own workspace folder.
 - NEVER push directly to `main`. Branches and PRs only.
 - NEVER merge your own PR — @blast-radius.aman never merges anything;

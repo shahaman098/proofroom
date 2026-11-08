@@ -1,4 +1,4 @@
-# Ship Room — live room transcript (Nov 8, 2026)
+# ProofRoom — Flip the Switch live room transcript (Nov 8, 2026)
 
 _Real messages from the demo run. The agent's progress cards (Working… Ns, tool traces) are abbreviated in chat; the full session ran locally via Switch._
 
@@ -21,7 +21,7 @@ _Real messages from the demo run. The agent's progress cards (Working… Ns, too
 
 The server endpoint (`/api/checkout`) already passed `discountCode` through correctly, so no change needed there.
 
-**PR:** https://github.com/shahaman098/ship-room/pull/1
+**PR:** https://github.com/shahaman098/proofroom/pull/1
 
 **Test run (7/7 pass):**
 ```
@@ -36,7 +36,7 @@ The server endpoint (`/api/checkout`) already passed `discountCode` through corr
 
 Waiting for human review before merge.
 
-**[00:43] support (owner):** Reviewed and merged - clean root-cause writeup and the failing test first is exactly right. Pulling the latest build now. https://github.com/shahaman098/ship-room/pull/1
+**[00:43] support (owner):** Reviewed and merged - clean root-cause writeup and the failing test first is exactly right. Pulling the latest build now. https://github.com/shahaman098/proofroom/pull/1
 
 **[00:44] support (owner):** Next one for you: warehouse flagged that customers can order more units than we have in stock - stock goes negative. Can you take that one too?
 
@@ -47,7 +47,7 @@ Waiting for human review before merge.
 
 **[00:47] ship-engineer.aman (agent):** On it — pulling the latest main and looking at the stock validation code now.
 
-**[00:51] support (owner):** That one went even faster - reviewed and merged. Two reports, two reviewed PRs, zero IDEs opened. https://github.com/shahaman098/ship-room/pull/2
+**[00:51] support (owner):** That one went even faster - reviewed and merged. Two reports, two reviewed PRs, zero IDEs opened. https://github.com/shahaman098/proofroom/pull/2
 
 **[00:51] ship-engineer.aman (agent):** **Worked for 1m 10s. 1 tool call.**
 
@@ -62,7 +62,7 @@ Waiting for human review before merge.
 
 This guarantees no partial deductions and handles duplicate-line-item edge cases.
 
-**PR:** https://github.com/shahaman098/ship-room/pull/2
+**PR:** https://github.com/shahaman098/proofroom/pull/2
 
 **Test run (12/12 pass):**
 ```
@@ -107,7 +107,7 @@ Waiting for human review.
 
 **[01:07] ship-engineer.aman (agent):** **Root cause:** `computeTax` in `/api/checkout` was called with `subtotalCents` (the pre-discount amount) instead of `afterDiscountCents`. Every customer using a discount code in a taxed region was charged tax on the full price rather than the discounted price. For the reported repro — 3×Silent Mouse + SAVE20 shipped to DE — that's €11.39 tax instead of €9.12, a **€2.27 overcharge per order**. Shipping was already correctly wired to `afterDiscountCents`; only the tax line was wrong. One-line fix: `computeTax(subtotalCents, region)` → `computeTax(afterDiscountCents, region)`.
 
-**PR:** https://github.com/shahaman098/ship-room/pull/3
+**PR:** https://github.com/shahaman098/proofroom/pull/3
 
 **Test evidence (20/20 pass, all 4 suites):**
 ```
@@ -190,7 +190,7 @@ Both #1 and #2 are **pre-existing**, not introduced by PR #3. The tax fix itself
 
 **Fix:** one guard added at the top of the validation loop before any other checks: `if (!Number.isInteger(item.qty) || item.qty < 1)` → 400. Covers negative, zero, fractional, and non-numeric inputs.
 
-**PR:** https://github.com/shahaman098/ship-room/pull/4
+**PR:** https://github.com/shahaman098/proofroom/pull/4
 
 **Test evidence (24/24 pass, all 4 suites):**
 ```

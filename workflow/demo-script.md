@@ -5,9 +5,9 @@
 
 ## Before recording
 
-- [ ] Browser tab 1: http://localhost:53758 — login `user` / `ShipRoomOwner!2026` → **#ship-room**
+- [ ] Browser tab 1: Switch Console → **#proofroom** (Flip the Switch · ProofRoom team room)
 - [ ] Browser tab 2: https://github.com/shahaman098/proofroom/pull/6 (merged compat PR)
-- [ ] Browser tab 3: https://github.com/shahaman098/proofroom-web (repo B)
+- [ ] Browser tab 3: https://github.com/shahaman098/proofroom/tree/main/clients (contract suite / repo B in monorepo)
 - [ ] Terminal: backend running (`node server.js` in demo-app)
 
 ## Beats

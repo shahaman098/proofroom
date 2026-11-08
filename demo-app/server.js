@@ -1,4 +1,4 @@
-// QuickCart — a tiny checkout service. Demo "production" app for Ship Room.
+// QuickCart — a tiny checkout service. Backend for ProofRoom (Flip the Switch demo).
 // Seeded bugs are intentional; see workflow/room-instructions.md.
 
 const express = require('express');

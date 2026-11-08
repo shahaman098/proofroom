@@ -1,7 +1,7 @@
 {
   "name": "quickcart",
   "version": "1.0.0",
-  "description": "Tiny checkout service used as the demo 'production' app for Ship Room",
+  "description": "QuickCart API — backend repo for ProofRoom (WeMakeDevs Flip the Switch)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
