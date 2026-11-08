@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "test": "node --test src/model.test.js src/story.test.js"
+    "test": "node --test src/model.test.js src/story.test.js src/contract.test.js"
   },
   "dependencies": {
     "react": "^19.0.0",

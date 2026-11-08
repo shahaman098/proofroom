@@ -1,11 +1,13 @@
-// Demo-only state: verification and approval are not connected to live services.
+// Replay-only state: verification and approval are not connected to live services.
 export const initialState = {step: 0, approval: null, changeCount: 0};
 
+// Real commits from the room run: fd023c7 (PR #5, rename), b13234f (PR #6, compat fix),
+// fe4c9c3 (verifier's contract test). The step-6 revision is hypothetical: one extra commit on top of 405f440.
 export function revision(state) {
   return {
-    backend: state.changeCount > 0 ? `d82ab60-${state.changeCount}` : state.step >= 3 ? 'c41e8d2' : 'a93d1c4',
-    frontend: 'f2a901b',
-    requirements: state.step >= 2 ? 'R2' : 'R1',
+    backend: state.changeCount > 0 ? `405f440+${state.changeCount}` : state.step >= 3 ? 'b13234f' : 'fd023c7',
+    frontend: state.step >= 1 ? 'fe4c9c3' : 'none',
+    requirements: state.step >= 2 ? 'old-apps' : 'initial',
   };
 }
 export const fingerprint = state => Object.values(revision(state)).join(':');

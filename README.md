@@ -7,12 +7,34 @@
 
 🎬 **Demo video:** _link lands here before deadline_ <!-- TODO -->
 
+## Try it in 60 seconds
+
+```bash
+git clone https://github.com/shahaman098/proofroom && cd proofroom
+./run-demo.sh        # starts the QuickCart backend and the ProofRoom frontend
+```
+
+Open the Vite URL it prints and scroll to **“Try it on the real backend”**:
+place an order, then tick **Replay PR #5**. You'll watch the old v1.2 mobile
+app break against the real API: the exact failure our two agents caught in
+the Switch room. (This is the shortcut for the *product*; the *workflow* runs in a Switch room: see [Reproduce our setup](#reproduce-our-setup-10-minutes). Prefer to run the pieces yourself? See
+[`proofroom/`](proofroom/).)
+
+## How ProofRoom maps to the judging criteria
+
+| Criterion | Where to see it |
+|---|---|
+| **Use of Switch** | The room *is* the product. Remove it and the two agents can't share requirements or evidence. See [Why Switch is central](#why-switch-is-central-the-project-fails-without-it) and the [full transcript](workflow/room-transcript.md). |
+| **Technical execution** | `./run-demo.sh`; backend `28/28`, client contract suite `5/5`, frontend `7/7` tests. The commits named in the walkthrough (`fd023c7`, `b13234f`, `405f440`, `fe4c9c3`) exist on GitHub. |
+| **Creativity and impact** | A real cross-team failure (a renamed field breaking shipped mobile apps) that no single repo's tests could see, caught, fixed and approved about 12 minutes after the first check was requested (01:33 → 01:45 GMT). |
+| **Presentation** | The demo video (linked at the top once uploaded), the replayed walkthrough in [`proofroom/`](proofroom/), and the live panel. |
+
 ## The problem
 
 Every developer has lived this: your coding agent changes an API, your suite
-is green, you ship — and a teammate's frontend breaks an hour later. **40% of
-AI-assisted fixes break something adjacent**, and no single repo's tests can
-see across the boundary. Agents work alone even when their humans are teammates.
+is green, you ship — and a teammate's frontend breaks an hour later. a change can pass every test in
+its own repo and still break someone else's code, because no single repo's tests
+can see across the boundary. Agents work alone even when their humans are teammates.
 
 ## What ProofRoom does
 
@@ -138,16 +160,28 @@ _Captured live on the build machine during the event. The `total` alias and `gra
 
 ## 🖥️ Frontend workspace (by teammate B)
 
-[`proofroom/`](proofroom/) — a scroll-driven visualization of the entire loop:
-two repositories (checkout-api ↔ checkout-client) connected through the
-Switch room, with revision fingerprints (`d82ab60-1`), the R2 legacy-compat
-requirement, verification probes, and the human approval gate. Built by
-teammate B's human, reviewed through this very room's flow.
+[`proofroom/`](proofroom/) — a scroll-driven replay of the live room run above, plus a live panel on the real API:
+the QuickCart API and the v1.2 mobile clients connected through the Switch
+room, with the real commits (`fd023c7` → `b13234f` + `405f440`, contract test
+`fe4c9c3`), the *FOUND — BLOCKING* → *CLEAR* verdict cards, and an interactive
+`/approve` gate that goes stale if a new commit lands. Built by teammate B's
+human, reviewed through this very room's flow. Replay only: not connected to
+live services.
+
+The page also has a **live panel** that talks to the real QuickCart backend:
+build a cart, pick a region and discount code, and it `POST`s to `/api/checkout`.
+The response is then checked exactly the way the two real clients check it
+(`clients/web-client.js` and `clients/mobile-client-v1.js`). A toggle replays
+PR #5 by hiding `total` from that same response, so you can see the old mobile
+app break against your own backend.
 
 ```bash
-cd proofroom && npm install && npm run dev   # → http://localhost:5173
-npm test                                     # node --test, 4/4 green
+cd demo-app && npm install && npm start      # backend → http://localhost:3000
+cd proofroom && npm install && npm run dev   # frontend → http://localhost:5173 (proxies /api to the backend)
+npm test                                     # node --test, 7/7 green (includes parity tests against clients/)
 ```
+
+Without the backend running, the live panel shows how to start it; the walkthrough and approval replay still work.
 
 ## Team
 
