@@ -171,3 +171,50 @@ describe('POST /api/checkout — tax on discounted total', () => {
     expect(res.body.taxBreakdown).toEqual({ tax: 8.90, shipping: 4.95 });
   });
 });
+
+describe('POST /api/checkout — backward compatibility (v1.2 mobile contract)', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  // Backward-compat regression: PR #5 renamed 'total' → 'grandTotal' and removed
+  // the 'total' field. v1.2 mobile binaries were shipped before PR #5 and can only
+  // read 'total' — 'grandTotal' did not exist when they were compiled.
+  // Fix: keep 'total' as a deprecated alias alongside 'grandTotal'.
+  test('response includes legacy "total" field equal to grandTotal (v1.2 backward compat)', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: 1 }] });
+    expect(res.status).toBe(200);
+    // New contract: grandTotal must be present.
+    expect(res.body.grandTotal).toBeDefined();
+    // Old contract: total must still be present and equal grandTotal.
+    expect(res.body.total).toBeDefined();
+    expect(res.body.total).toBe(res.body.grandTotal);
+  });
+
+  // Both fields must hold the correct value (not just be equal to each other).
+  test('total and grandTotal both equal the correct computed grand total', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: 1 }], region: 'US' });
+    expect(res.status).toBe(200);
+    // 19.99 + 7% US tax (1399 cents → 98 cents) + standard shipping (495 cents)
+    // grandTotal = afterDiscount + tax + shipping = 1999 + 140 + 495 = 2634 cents = 26.34
+    const expected = res.body.grandTotal;
+    expect(expected).toBeGreaterThan(0);
+    expect(res.body.total).toBe(expected);
+  });
+
+  // X-API-Version header must be present so clients can negotiate the API version.
+  test('response includes X-API-Version header set to "2"', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'hub', qty: 1 }] });
+    expect(res.status).toBe(200);
+    expect(res.headers['x-api-version']).toBe('2');
+  });
+});
