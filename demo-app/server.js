@@ -4,6 +4,8 @@
 const express = require('express');
 const path = require('path');
 const { calculateTotal } = require('./pricing');
+const { computeTax, regionLabel } = require('./tax');
+const { computeShipping } = require('./shipping');
 
 const app = express();
 app.use(express.json());
@@ -45,9 +47,33 @@ app.post('/api/checkout', (req, res) => {
     qty: item.qty,
   }));
 
-  const total = calculateTotal(priced, discountCode);
+  const region = (req.body && req.body.region) || 'US';
+  const weightGrams = (req.body && req.body.weightGrams) || 500;
+
+  // All money math in integer cents from here on.
+  const subtotalCents = Math.round(priced.reduce((s, it) => s + it.price * it.qty, 0) * 100);
+  const afterDiscountCents = Math.round(calculateTotal(priced, discountCode) * 100);
+  const discountCents = subtotalCents - afterDiscountCents;
+
+  // BUG #4 (seeded): tax is computed on the PRE-discount subtotal, so any
+  // discounted customer in a taxed region (DE/UK/FR/US) is overcharged.
+  // Correct ordering: apply the discount first, then tax the discounted amount.
+  const taxCents = computeTax(subtotalCents, region);
+  const shippingCents = computeShipping(afterDiscountCents, weightGrams);
+  const grandTotalCents = afterDiscountCents + taxCents + shippingCents;
+
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
-  res.json({ orderId, total, discountApplied: discountCode || null });
+  res.json({
+    orderId,
+    region,
+    regionName: regionLabel(region),
+    subtotal: subtotalCents / 100,
+    discount: discountCents / 100,
+    discountApplied: discountCode || null,
+    tax: taxCents / 100,
+    shipping: shippingCents / 100,
+    total: grandTotalCents / 100,
+  });
 });
 
 const PORT = process.env.PORT || 3000;
