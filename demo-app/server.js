@@ -23,13 +23,21 @@ app.post('/api/checkout', (req, res) => {
     return res.status(400).json({ error: 'Cart is empty' });
   }
 
-  // Validate products and stock for all items before deducting anything,
-  // so a failed order never partially reduces inventory.
+  // Validate products exist and aggregate requested qty per product, so
+  // duplicate line items in one cart don't bypass per-line stock checks.
+  const requested = {};
   for (const item of items) {
     const product = PRODUCTS.find((p) => p.id === item.id);
     if (!product) return res.status(400).json({ error: `Unknown product: ${item.id}` });
-    if (item.qty > product.stock) {
-      return res.status(400).json({ error: `Insufficient stock for ${item.id}: requested ${item.qty}, available ${product.stock}` });
+    requested[item.id] = (requested[item.id] || 0) + item.qty;
+  }
+
+  // Validate aggregated quantities against available stock before deducting
+  // anything, so a failed order never partially reduces inventory.
+  for (const [id, qty] of Object.entries(requested)) {
+    const product = PRODUCTS.find((p) => p.id === id);
+    if (qty > product.stock) {
+      return res.status(400).json({ error: `Insufficient stock for ${id}: requested ${qty}, available ${product.stock}` });
     }
   }
 
