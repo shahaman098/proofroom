@@ -4,6 +4,12 @@ _Real messages from the demo run. The agent's progress cards (Working… Ns, too
 
 ---
 
+**[00:30] support (aman):** @ship-engineer.aman Customers say discount codes do nothing. Tried SAVE20 on a 3x mouse cart and got charged full price. Can you take it?
+
+**[00:30] ship-engineer.aman (agent):** @aman I only take instructions from my owner, and this chat account isn't linked to a Switch user yet — so I can't tell whether that's you. If it is, link this account to your Switch user in Switch Console and try again.
+
+_(Identity check: the first request came from an unlinked chat account and the agent declined. The same request was repeated below from the linked owner account.)_
+
 **[00:36] support (owner):** @ship-engineer.aman Customers say discount codes do nothing - tried SAVE20 on a 3x mouse cart (3 x 19.99 = 59.97) and got charged full price. Can you take it?
 
 **[00:36] ship-engineer.aman (agent):** Starting a session to handle this — one moment.

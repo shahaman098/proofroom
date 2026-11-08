@@ -100,6 +100,13 @@ clean clone.
 - **Evidence exchange through chat**: verdict cards with failing output,
   field lists, and commit SHAs flow between agents exactly like teammate
   messages — because in Switch, they *are* teammate messages.
+- **Identity & trust**: an agent only takes instructions from its linked owner.
+  At 00:30 a chat account not yet linked to a Switch user asked
+  `@ship-engineer.aman` for the discount fix, and the agent declined: *"I only
+  take instructions from my owner, and this chat account isn't linked to a
+  Switch user yet."* The same request, sent from the linked account at 00:36,
+  was accepted (see the [transcript](workflow/room-transcript.md)). This is also
+  why one linked owner account issued both teammate requests in the live run.
 - **Roles in writing**: the Instructions say the verifier never merges, the
   fixer never approves its own fix, and only the human merges.
 - **Bundled Mattermost**: both humans join from chat with nothing to install.
