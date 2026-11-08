@@ -23,9 +23,9 @@ The agent's status cards, tool traces (`mcp__switch__read_context`…), and mess
 ## The problem
 
 When a customer bug comes in through support chat, the path to a fix crosses
-three tools and two handoffs: chat → ticket → engineer's IDE → PR → back to
-chat. The person who reported the bug has no visibility into the middle, and
-small bugs die in the queue.
+three tools and two handoffs — and even when an AI agent ships the fix,
+**40% of AI bug fixes silently break adjacent modules**. Nobody checks the
+blast radius before merging.
 
 ## The workflow
 
@@ -42,6 +42,30 @@ reports a bug in plain English, and the agent runs a fixed loop:
 The human never touches a terminal; the agent never merges its own code.
 One real task, completed by one person and one agent, together — exactly
 what the hackathon brief asks for.
+
+## Ship Room 2.0 — the adversarial triad
+
+Two agents and one human in one Switch room, with separated duties:
+
+```
+ report in room ─▶ @ship-engineer.aman                    @blast-radius.aman                    human
+                    reproduce → failing test ─▶ PR ─▶  pull branch → full suite          "/approve #N" in chat
+                    smallest fix → full suite ─▶       adversarial probes (tax/stock          │
+                    report + wait                        edges) → +1 regression test          ▼
+                                                      VERDICT CARD: CLEAR / FOUND ────▶ merge (only human)
+```
+
+The verdict card the verifier posted on PR #3 (excerpt — full text in the
+transcript):
+
+> **FOUND** — tax fix is correct, but two pre-existing security holes
+> confirmed by mandatory probes. Suite `21/21` … Added one adversarial
+> regression test (pushed to branch): *flat discount + FR VAT tax ordering* …
+> **FOUND #1 — Negative qty accepted as a valid order** → the store pays the
+> customer.
+
+The human approved the fix and filed the hole as the next report — the
+adversarial finding became the pipeline's next work item, in the same room.
 
 ## Why Switch is central (the project fails without it)
 
