@@ -171,3 +171,30 @@ describe('POST /api/checkout — tax on discounted total', () => {
     expect(res.body.taxBreakdown).toEqual({ tax: 8.90, shipping: 4.95 });
   });
 });
+
+describe('POST /api/checkout — backward compatibility (v1.2 mobile contract)', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  // Backward-compat regression: PR #5 renamed 'total' → 'grandTotal'.
+  // v1.2 mobile binaries were shipped BEFORE PR #5 and can only read 'total' —
+  // 'grandTotal' did not exist when they were compiled. Removing 'total' from
+  // the response breaks every in-flight v1.2 client silently (they receive
+  // undefined, not an error). The correct fix is to keep 'total' as an alias
+  // alongside 'grandTotal'.
+  //   Expected: res.body.total === res.body.grandTotal (both present, equal)
+  //   Actual  : res.body.total === undefined (field removed — BREAKING CHANGE)
+  test('response still includes legacy "total" field equal to grandTotal (v1.2 backward compat)', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: 1 }] });
+    expect(res.status).toBe(200);
+    // grandTotal must be present (new contract)
+    expect(res.body.grandTotal).toBeDefined();
+    // total must ALSO be present and equal grandTotal (old contract — v1.2 reads this)
+    expect(res.body.total).toBeDefined();
+    expect(res.body.total).toBe(res.body.grandTotal);
+  });
+});
