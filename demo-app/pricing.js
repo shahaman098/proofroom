@@ -15,8 +15,8 @@ const DISCOUNT_CODES = {
 // ever reaches the customer's bank charge.
 function calculateTotal(items, discountCode) {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const discount = applyDiscount(subtotal, null);
-  return subtotal - discount;
+  const discount = applyDiscount(subtotal, discountCode);
+  return parseFloat((subtotal - discount).toFixed(2));
 }
 
 function applyDiscount(subtotal, code) {
