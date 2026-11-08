@@ -1,28 +1,42 @@
 # ProofRoom frontend
 
-React + JavaScript + Vite. A three-screen landing page and interactive, simulated cross-repository verification workflow.
+React + JavaScript + Vite. An original scroll-driven verification workspace inspired by the supplied lance.live desktop recording, followed by an interactive simulated approval demo.
 
 ## Run
 
-Use Node 20.19+ or 22.12+. Run `npm ci`, then `npm run dev`. `npm run build` creates `dist`. `npm test` checks approval guards, stale revisions, re-verification and approval history.
+Requires Node 20.19+ or 22.12+. Run `npm ci`, then `npm run dev`. `npm test` runs the approval and scroll-timeline regression tests. `npm run build` creates `dist`.
 
-## Structure
+## Walkthrough
 
-- `src/main.jsx`: hero and three-section page composition.
-- `src/Architecture.jsx`: CSS building illustrations.
-- `src/Carousel.jsx`: manual feature carousel with native horizontal swipe, previous/next buttons, indicators, arrow keys and Home/End navigation. Its state is independent of verification.
-- `src/Demo.jsx`: conversation/evidence panels, mobile keyboard tabs and persistent approval controls. Long histories and expanded test output remain accessible in scrollable panels.
-- `src/useReveal.js`: one-time IntersectionObserver reveals; content remains visible without observer support.
-- `src/style.css`: responsive layout, design tokens and reduced-motion styles.
-- `src/content.js`: workflow copy and messages.
-- `src/model.js`: pure demo transitions, revision identifiers and approval eligibility.
+Desktop uses a two-viewport section with a one-viewport sticky scene. Scroll position drives camera transforms, connection-path drawing, requirement/evidence reveals, card crossfades and chapter indicators. There is no time-based playback or wheel interception: reverse scrolling returns to the same frame. The interactive demo occupies the third viewport, including its footer.
 
-## Layout and accessibility
+The presentation has five chapters: propose → discover → capture → verify → review. Chapter buttons, previous/next and Left/Right/Home/End keyboard navigation move through this presentation only. They never dispatch approval actions.
 
-Each main section uses `100svh`, including its navigation/footer, so normal viewport heights total three screens. A 560px minimum per section preserves readable controls on unusually short windows or enlarged text instead of clipping content. Native carousel scrolling uses proximity snapping; the document scrolls freely. Reduced-motion preferences disable reveals and smooth scrolling.
+At widths of 900px or less, or with `prefers-reduced-motion: reduce`, the walkthrough becomes a manual chapter carousel with stable readable illustrations. Horizontal touch gestures change chapters without cancelling vertical scrolling. No camera animation runs in this mode. The manual section can be shorter than the two-screen desktop version.
 
-Browser QA covered 1363×936 desktop and iframe viewports of 768×1024, 390×844 and 320×568 (classic scrollbars reduce content width). All measured three viewport heights without horizontal document overflow. Checked mouse/keyboard carousel controls, mobile tabs, approval gating, code-change invalidation and re-verification. Physical touch gestures and an OS-level reduced-motion preference were not emulated; these use native overflow scrolling and CSS/media-query support respectively.
+Desktop sections have a 560px minimum viewport height. Mobile manual sections have an 850px minimum to preserve readable content and controls on short screens. Below unusually short window heights or at enlarged text settings, accessibility takes precedence over a strict three-screen limit. Conversation histories and expanded evidence remain accessible inside scrollable panels.
 
-All activity is simulated. No real Switch, GitHub, test execution, identity verification or external approval is connected. Production approval rules must be enforced server-side.
+## Source
 
-Visual direction follows the supplied lance.live-inspired architectural brief. The reference website returned HTTP 403 during retrieval; this is an original implementation, not a verified reproduction of its animation.
+- `src/Walkthrough.jsx`: chapter cards, navigation, swipe gestures and page composition.
+- `src/Workspace.jsx`: original SVG workspace and static manual-mode illustrations.
+- `src/useStory.js`: passive scroll/resize observers, one-shot requestAnimationFrame updates and responsive/reduced-motion mode changes.
+- `src/story.js`: pure camera keyframes, drawing progress, chapter transitions and scroll geometry.
+- `src/story.css`: sticky workspace, information cards and responsive/manual layouts.
+- `src/Demo.jsx`: separate conversation/evidence interface and human decision controls.
+- `src/model.js`: approval guards, revision identifiers, stale-decision invalidation and re-verification.
+- `src/content.js`: demo conversation content.
+- `src/useReveal.js`: optional demo heading entrance; reduced-motion aware.
+- `src/style.css`: shared visual tokens and demo styles.
+
+## Verification
+
+- Four regression tests cover approval guards/history, changed-revision retention, reversible/deterministic timeline states and resize geometry.
+- Desktop browser: pinned scene, wheel-driven forward/backward movement, paused-frame stability and chapter synchronisation. Returning from progress 0.6496 to 0.5 restored the exact camera transform.
+- Desktop 1363×936: 2808px document height (three screens), no horizontal overflow.
+- Mobile iframe 390×844: 1694px document height; 320×568: 1418px. No horizontal overflow or clipped chapter cards.
+- Tablet iframe 768×1024: 2048px document height. Live resizing between desktop/tablet and changed viewport height recomputed mode and camera geometry.
+- Keyboard chapter controls, mobile demo tabs, approval, stale-approval blocking and re-verification were exercised in the browser. Presentation navigation left the demo at its initial proposed state.
+- Reduced-motion logic was tested with an emulated matchMedia preference and rendered static illustrations. No OS setting was changed. Physical touch gestures were not tested on a touch device.
+
+All activity is simulated. Switch rooms, GitHub, agent execution and tests are not connected to live services. A real coordinator must enforce approval rules server-side.

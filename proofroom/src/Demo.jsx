@@ -28,7 +28,7 @@ export default function Demo() {
   }
  }
  return <section id="demo" className="screen demo-section" ref={reveal} aria-labelledby="demo-heading">
-  <div className="section-heading"><div><p className="eyebrow">03 / THE PROOF IS IN THE ROOM</p><h2 id="demo-heading">Watch. Verify. Decide.</h2></div><span className="simulation">Interactive demo · Simulated activity</span></div>
+  <div className="section-heading"><div><p className="eyebrow">THE PROOF IS IN THE ROOM</p><h2 id="demo-heading">Watch. Verify. Decide.</h2></div><span className="simulation">Interactive demo · Simulated activity</span></div>
   <div className="demo-shell">
    <header className="demo-header"><span><i className="room-dot"/> # release-check</span><span className="muted">Switch room / PR-001</span></header>
    <div className="demo-title"><h3>{content.titles[state.step]}</h3><span className={`status ${stale||state.step===1?'error':''} ${state.step===5?'success':''}`} role="status">{statuses[state.step]}</span></div>
