@@ -5,7 +5,7 @@
 > Flip the Switch hackathon submission (WeMakeDevs × DevTools Academy × Switch)
 > Track: **Best Business Workflow** · Two repos, two agents, one Switch room
 
-🎬 **Demo video:** _link lands here before deadline_ <!-- TODO -->
+🎬 **Demo video:** [proofroom-demo.mp4 (3m40s)](https://github.com/shahaman098/proofroom/releases/download/demo-v2/proofroom-demo.mp4) — the room's real verdict cards, terminal proof, and a live checkout, captured during the event
 
 ## Try it in 60 seconds
 
