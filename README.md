@@ -91,6 +91,51 @@ clean clone.
 5. Ask teammate A's agent for an API change. Watch teammate B's agent catch
    what your own suite can't.
 
+## Proof it runs
+
+```bash
+$ ▶ cd demo-app && npm test
+Test Suites: 4 passed, 4 total
+Tests:       28 passed, 28 total
+Snapshots:   0 total
+Time:        0.627 s, estimated 1 s
+Ran all test suites.
+
+$ ▶ cd clients && API_BASE=localhost:3000 npm test
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.226 s, estimated 1 s
+Ran all test suites.
+
+$ ▶ curl -s -X POST localhost:3000/api/checkout -H 'Content-Type: application/json' -d '{"items":[{"id":"mouse","qty":3}],"discountCode":"SAVE20","region":"DE"}'
+{
+    "orderId": "ORD-MW77LBR9",
+    "region": "DE",
+    "regionName": "Germany",
+    "subtotal": 59.97,
+    "discount": 11.99,
+    "discountApplied": "SAVE20",
+    "tax": 9.12,
+    "shipping": 4.95,
+    "taxBreakdown": {
+        "tax": 9.12,
+        "shipping": 4.95
+    },
+    "grandTotal": 62.05,
+    "total": 62.05
+}
+
+$ ▶ gh pr list --state all --limit 6
+6	fix: restore total as deprecated alias, add X-API-Version header	fix/backward-compat-total-alias-api-version	MERGED	2026-11-08T01:39:43Z
+5	feat: rename total → grandTotal, add taxBreakdown to checkout response	feat/checkout-response-grand-total-breakdown	MERGED	2026-11-08T01:31:29Z
+4	fix: negative quantities accepted as valid orders, store pays customer	fix/negative-qty-accepted-as-valid-order	MERGED	2026-11-08T01:15:32Z
+3	fix: tax computed on pre-discount subtotal, overcharging discounted orders	fix/tax-computed-on-pre-discount-subtotal	MERGED	2026-11-08T01:01:55Z
+2	fix: checkout allows over-stock orders, driving inventory negative	fix/stock-goes-negative	MERGED	2026-11-08T00:49:20Z
+1	fix: discount codes silently dropped; totals not rounded to cents	fix/discount-code-not-applied	MERGED	2026-11-08T00:42:05Z
+```
+
+_Captured live on the build machine during the event. The `total` alias and `grandTotal` coexist — that is PR #6's compatibility layer at work._
+
 ## Team
 
 - **Aman Kumar Sah** — [@shahaman098](https://github.com/shahaman098) (solo build; the workflow is designed for two teammates)
