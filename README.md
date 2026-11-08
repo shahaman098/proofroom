@@ -1,124 +1,99 @@
-# Ship Room 🚢
+# ProofRoom 🛡️
 
-**A Switch room where customer bug reports become reviewed pull requests — without anyone opening an IDE.**
+**Your agent says the change works. ProofRoom checks whether it works for your teammates.**
 
 > Flip the Switch hackathon submission (WeMakeDevs × DevTools Academy × Switch)
-> Track: **Best Business Workflow**
+> Track: **Best Business Workflow** · Two repos, two agents, one Switch room
 
-🎬 **Demo video:** _recording in progress — will be linked here and in the submission before the deadline_
-
-## Proof: the loop, run live during the event
-
-This workflow isn't a mock — it ran end-to-end during the hackathon window:
-
-- **Human** (support role) reported in the Switch room (Mattermost): *"Customers say discount codes do nothing — tried SAVE20 on a 3× mouse cart and got charged full price."*
-- **`ship-engineer.aman`** (Claude Code agent via Switch) recognized its owner, started a session, cloned the repo, reproduced the bug, **added a failing test first**, applied the two-line fix, ran the full suite, and opened:
-  → **PR [#1 — "fix: discount codes silently dropped; totals not rounded to cents"](https://github.com/shahaman098/ship-room/pull/1)** *(merged)*
-- **Human** reviewed the diff and merged; the agent caught the float-rounding bug (#2) in the same pass.
-- **PR [#2 — "fix: checkout allows over-stock orders, driving inventory negative"](https://github.com/shahaman098/ship-room/pull/2)** *(merged)* — a second report was filed right after and the whole loop re-ran in **~4 minutes**, proving the room is a **repeatable system**, not a one-off demo.
-- Full live transcript: [`workflow/room-transcript.md`](workflow/room-transcript.md)
-
-The agent's status cards, tool traces (`mcp__switch__read_context`…), and messages are all in the room transcript shown in the demo video.
+🎬 **Demo video:** _link lands here before deadline_ <!-- TODO -->
 
 ## The problem
 
-When a customer bug comes in through support chat, the path to a fix crosses
-three tools and two handoffs — and even when an AI agent ships the fix,
-**40% of AI bug fixes silently break adjacent modules**. Nobody checks the
-blast radius before merging.
+Every developer has lived this: your coding agent changes an API, your suite
+is green, you ship — and a teammate's frontend breaks an hour later. **40% of
+AI-assisted fixes break something adjacent**, and no single repo's tests can
+see across the boundary. Agents work alone even when their humans are teammates.
 
-## The workflow
+## What ProofRoom does
 
-**Ship Room** is one chat room (team chat, bundled Mattermost) with one
-on-call AI agent (Claude Code) connected through **Switch**. A teammate
-reports a bug in plain English, and the agent runs a fixed loop:
+Two teammates bring their **existing agents** — working in **separate
+repositories** — into **one shared Switch room**:
 
-```
- report in room ─▶ reproduce ─▶ failing test ─▶ smallest fix ─▶ full suite ─▶ PR ─▶ human review & merge ─▶ confirm in room
-      ▲                                                                                                        │
-      └──────────────────────────────── the room is the whole interface ───────────────────────────────────────┘
-```
+| Teammate | Repo | Agent |
+|---|---|---|
+| **A — backend** | this repo (QuickCart API, `demo-app/`) | `@ship-engineer.aman` |
+| **B — clients** | [`shahaman098/proofroom-web`](https://github.com/shahaman098/proofroom-web) (web + **legacy mobile v1.2** binaries pinned to the API contract) | `@blast-radius.aman` |
 
-The human never touches a terminal; the agent never merges its own code.
-One real task, completed by one person and one agent, together — exactly
-what the hackathon brief asks for.
+Switch carries their **requirements, handoffs and decisions** in one
+conversation. This demo ran **live during the event** (all timestamps GMT):
 
-## Ship Room 2.0 — the adversarial triad
+1. **01:31** — Teammate A asks their agent to rename `total` → `grandTotal`
+   and add `taxBreakdown` to the checkout response. Done in **80 seconds**;
+   backend suite green; PR #5 merged with commit `fd023c7` reported in the room.
+2. **01:37** — Teammate B orders the contract suite run, with the requirement:
+   *"the v1.2 mobile binaries are already shipped to the App Store — older
+   mobile clients MUST keep working."*
+   → **VERDICT CARD: "FOUND — BLOCKING. Do not ship the mobile release tomorrow."**
+   The break, proven with a probe: `response.total → undefined` while
+   `response.grandTotal → 26.34 ✓`. Each repo was green in isolation — the
+   breakage only existed **between** them, and only the room could see it.
+3. **01:39** — The agents converge through the room. The backend agent's own
+   root-cause note admits: *"the old contract had zero test coverage."*
+   Compat fix: `total` restored as a deprecated alias + `X-API-Version`
+   header + compat tests (PR #6, commit `b13234f`).
+4. **01:44** — Teammate B's agent re-runs the contract suite:
+   **VERDICT CARD: CLEAR** — 28/28, contract probes 10/10,
+   `total === grandTotal` under DE+SAVE20, **verified against exact commits
+   `b13234f` and `405f440`**.
+5. **01:45** — Human: `"/approve — both sides green, evidence against exact
+   commits from both agents."`
 
-Two agents and one human in one Switch room, with separated duties:
+Full transcript: [`workflow/room-transcript.md`](workflow/room-transcript.md).
 
-```
- report in room ─▶ @ship-engineer.aman                    @blast-radius.aman                    human
-                    reproduce → failing test ─▶ PR ─▶  pull branch → full suite          "/approve #N" in chat
-                    smallest fix → full suite ─▶       adversarial probes (tax/stock          │
-                    report + wait                        edges) → +1 regression test          ▼
-                                                      VERDICT CARD: CLEAR / FOUND ────▶ merge (only human)
-```
+## Earlier the same day: the room's 4 merged bug-fix PRs
 
-The verdict card the verifier posted on PR #3 (excerpt — full text in the
-transcript):
+Before the cross-repo demo, this same room ran its fix pipeline live —
+four reports, four reviewed PRs, each with a failing test written first:
 
-> **FOUND** — tax fix is correct, but two pre-existing security holes
-> confirmed by mandatory probes. Suite `21/21` … Added one adversarial
-> regression test (pushed to branch): *flat discount + FR VAT tax ordering* …
-> **FOUND #1 — Negative qty accepted as a valid order** → the store pays the
-> customer.
+| PR | Fix | Loop time |
+|---|---|---|
+| [#1](https://github.com/shahaman098/proofroom/pull/1) | Discount codes silently dropped + float rounding | ~7 min |
+| [#2](https://github.com/shahaman098/proofroom/pull/2) | Stock over-sell (inventory going negative) | ~4 min |
+| [#3](https://github.com/shahaman098/proofroom/pull/3) | Tax computed pre-discount + first **VERDICT CARD**: *"FOUND — two pre-existing security holes"* (negative-qty orders where the store pays the customer) | ~7 min incl. adversarial pass |
+| [#4](https://github.com/shahaman098/proofroom/pull/4) | Negative-qty security hole — the verifier's finding became the next report automatically | ~2 min |
 
-The human approved the fix and filed the hole as the next report — the
-adversarial finding became the pipeline's next work item, in the same room.
+The suite grew **5 → 28 tests** through the agents' loops, and passes from a
+clean clone.
 
 ## Why Switch is central (the project fails without it)
 
-- **The room is the interface.** No dashboard, no CLI. Room **Instructions**
-  (see [`workflow/room-instructions.md`](workflow/room-instructions.md)) define
-  the entire loop — reproduce → test → fix → PR → report — and are inherited
-  by every agent that joins. Delete the room and there is no product.
-- **Bundled Mattermost** means any teammate can join from chat with nothing
-  to install — that's the business value: support and PM report bugs where
-  they already live.
-- **Switch Console** runs the agent locally against the repo, so the fix
-  pipeline works on private code without any cloud copy.
-- Aliases (`!set-alias`), agent invites (`!invite-agent`) and room-scoped
-  instructions are used throughout the demo.
-
-## What's in this repo
-
-| Path | What it is |
-|---|---|
-| `demo-app/` | **QuickCart** — tiny checkout service with 3 intentionally seeded bugs (discount dropped, float rounding, no stock check). Tests pass out of the box; the buggy behaviors are deliberately uncovered. |
-| `workflow/room-instructions.md` | The exact instructions pasted into the Switch room — the heart of the workflow. |
-| `workflow/demo-script.md` | Beat-by-beat script of the demo video. |
-| `demo-app/pricing.js` | The pricing engine the agent fixes — see the seeded-bug comments. |
-| Pull requests | **The agent's real PRs from the live demo are right here in this repo** — open the PR list and judge the loop by its output. |
+- **One room, two repos, two owners.** The room's **Instructions** (see
+  [`workflow/room-instructions.md`](workflow/room-instructions.md)) define the
+  cross-repo contract — who owns what, what evidence looks like, who merges.
+  Neither agent can see the other's CI; the room is the only shared context.
+- **Evidence exchange through chat**: verdict cards with failing output,
+  field lists, and commit SHAs flow between agents exactly like teammate
+  messages — because in Switch, they *are* teammate messages.
+- **Identity & trust**: the room knows which human is which teammate
+  (unlinked accounts are refused by the agent — on record in the transcript).
+- **Bundled Mattermost**: both humans join from chat with nothing to install.
+- Delete the room and the collaboration doesn't exist — there is no app, no
+  dashboard, no CI magic. The room *is* the product.
 
 ## Reproduce our setup (10 minutes)
 
-1. Install **Switch Console**: [docs.switchagents.ai — install](https://docs.switchagents.ai/switch-rooms/getting-started/install-switch-console.html) → open it → **Get started** → **On this computer** → **Start** (this starts the local server + bundled Mattermost).
-2. Choose **Claude Code** as the agent when prompted (needs your own Anthropic API key or subscription).
-3. Create a room: **Your Rooms → Create room** → pick Mattermost → name it *Ship Room* → paste [`workflow/room-instructions.md`](workflow/room-instructions.md) into Instructions → add your agent.
-4. Clone this repo somewhere the agent can reach, and start the app:
-   ```bash
-   cd demo-app && npm install && npm start   # http://localhost:3000
-   ```
-5. In the Ship Room channel, report a bug in plain English. Try:
-   > Customers say discount codes do nothing. Tried SAVE20 on a 3× mouse cart and got charged full price.
-6. Review the PR the agent opens. Merge it. That's the whole loop.
-
-## The seeded bugs
-
-QuickCart is a real, runnable service — the bugs are real too, just planted
-so the demo is reproducible for judges:
-
-1. **Discount codes silently dropped** — `calculateTotal()` never passes the
-   code through; customers pay full price while the UI confirms the code.
-2. **Float rounding** — totals like `59.97000000000001` go straight to the charge.
-3. **No stock check** — you can order more units than exist; stock goes negative.
+1. Install **Switch Console**: [docs](https://docs.switchagents.ai/switch-rooms/getting-started/install-switch-console.html) → **Get started** → **On this computer** → **Start** (starts the local server + bundled Mattermost).
+2. Choose **Claude Code** as agent provider (your own key/subscription).
+3. Create a room, paste [`workflow/room-instructions.md`](workflow/room-instructions.md) into Instructions, add both agents.
+4. Backend: `cd demo-app && npm install && npm start` → http://localhost:3000.
+   Client: `cd proofroom-web && npm install` and run its contract suite with
+   `API_BASE=http://localhost:3000 npm test`.
+5. Ask teammate A's agent for an API change. Watch teammate B's agent catch
+   what your own suite can't.
 
 ## Team
 
-- **Aman Kumar Sah** — [@shahaman098](https://github.com/shahaman098)
-
-## Licenses & credits
+- **Aman Kumar Sah** — [@shahaman098](https://github.com/shahaman098) (solo build; the workflow is designed for two teammates)
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch).
 Powered by [Switch](https://github.com/sandbox-quantum/switch) 🧡
