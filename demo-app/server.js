@@ -28,6 +28,9 @@ app.post('/api/checkout', (req, res) => {
   // Validate products and stock for all items before deducting anything,
   // so a failed order never partially reduces inventory.
   for (const item of items) {
+    if (!Number.isInteger(item.qty) || item.qty < 1) {
+      return res.status(400).json({ error: `Invalid quantity for ${item.id}: must be a positive integer` });
+    }
     const product = PRODUCTS.find((p) => p.id === item.id);
     if (!product) return res.status(400).json({ error: `Unknown product: ${item.id}` });
     if (item.qty > product.stock) {
