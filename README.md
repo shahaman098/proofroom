@@ -5,7 +5,19 @@
 > Flip the Switch hackathon submission (WeMakeDevs × DevTools Academy × Switch)
 > Track: **Best Business Workflow**
 
-🎬 **Demo video:** _coming right after the final take_ <!-- TODO: embed link -->
+🎬 **Demo video:** _recording in progress — will be linked here and in the submission before the deadline_
+
+## Proof: the loop, run live during the event
+
+This workflow isn't a mock — it ran end-to-end during the hackathon window:
+
+- **Human** (support role) reported in the Switch room (Mattermost): *"Customers say discount codes do nothing — tried SAVE20 on a 3× mouse cart and got charged full price."*
+- **`ship-engineer.aman`** (Claude Code agent via Switch) recognized its owner, started a session, cloned the repo, reproduced the bug, **added a failing test first**, applied the two-line fix, ran the full suite, and opened:
+  → **PR [#1 — "fix: discount codes silently dropped; totals not rounded to cents"](https://github.com/shahaman098/ship-room/pull/1)** *(merged)*
+- **Human** reviewed the diff and merged; the agent caught the float-rounding bug (#2) in the same pass.
+- A second report (stock-oversell bug #3) was filed right after to prove the room is a **repeatable system**, not a one-off demo.
+
+The agent's status cards, tool traces (`mcp__switch__read_context`…), and messages are all in the room transcript shown in the demo video.
 
 ## The problem
 
