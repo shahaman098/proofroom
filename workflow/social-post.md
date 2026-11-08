@@ -1,5 +1,7 @@
 # #HowISwitch social copy — post-ready
 
+> **Published post:** set the live X or LinkedIn URL in [`submission-links.md`](./submission-links.md) (not this file).
+
 ## Option A — X/Twitter (fits 280, post with a screenshot of the verdict card)
 
 > Our agent said the API change was fine. 25/25 tests green.

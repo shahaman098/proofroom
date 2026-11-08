@@ -4,6 +4,15 @@ A change can pass every test in its own repo and still break someone else's code
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch), Best Business Workflow track.
 
+## Submission links
+
+Live URLs for optional tracks (edit [`workflow/submission-links.md`](workflow/submission-links.md) when posts are up):
+
+| Track | Live URL | Draft in repo |
+|-------|----------|---------------|
+| Best Blog | see submission-links | [`workflow/blog-post.md`](workflow/blog-post.md) |
+| #HowISwitch | see submission-links | [`workflow/social-post.md`](workflow/social-post.md) |
+
 ## What happened
 
 Two teammates, one Switch room, two existing agents:
@@ -95,7 +104,7 @@ Before the cross-repo run, the room handled four bug reports as four reviewed PR
 | `demo-app/` | QuickCart checkout API and its tests |
 | `clients/` | Web client, pinned v1.2 mobile client and the contract suite |
 | `proofroom/` | Frontend: room replay, live backend panel, approval demo |
-| `workflow/` | Room Instructions, transcript, demo script, blog draft, social copy |
+| `workflow/` | Room Instructions, transcript, demo script, [submission links](workflow/submission-links.md), blog/social drafts |
 | `run-demo.sh` | Starts the backend and frontend together |
 
 ## Reusing the setup
