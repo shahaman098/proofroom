@@ -58,6 +58,46 @@ describe('POST /api/checkout — stock validation', () => {
   });
 });
 
+describe('POST /api/checkout — quantity validation', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  // Security regression: a negative qty bypasses the stock check (−3 > 12 is false)
+  // and produces a negative total — the store would pay the customer. It also
+  // increments stock (product.stock -= −3 adds 3), corrupting inventory.
+  //   qty: −3, mouse price: 19.99 → subtotal: −59.97, total negative
+  test('returns 400 when qty is negative', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: -3 }] });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/quantity|qty/i);
+  });
+
+  // A zero qty is a no-op that should not produce a successful order.
+  test('returns 400 when qty is zero', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: 0 }] });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/quantity|qty/i);
+  });
+
+  // Verify that a negative qty does NOT corrupt stock (stock must stay at 12).
+  test('does not modify stock when qty is negative', async () => {
+    const freshApp = require('../server');
+    await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: -3 }] });
+    const products = await request(freshApp).get('/api/products');
+    const mouse = products.body.find((p) => p.id === 'mouse');
+    expect(mouse.stock).toBe(12); // must be unchanged
+  });
+});
+
 describe('POST /api/checkout — tax on discounted total', () => {
   beforeEach(() => {
     jest.resetModules();
