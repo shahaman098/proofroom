@@ -136,9 +136,23 @@ $ ▶ gh pr list --state all --limit 6
 
 _Captured live on the build machine during the event. The `total` alias and `grandTotal` coexist — that is PR #6's compatibility layer at work._
 
+## 🖥️ Frontend workspace (by teammate B)
+
+[`proofroom/`](proofroom/) — a scroll-driven visualization of the entire loop:
+two repositories (checkout-api ↔ checkout-client) connected through the
+Switch room, with revision fingerprints (`d82ab60-1`), the R2 legacy-compat
+requirement, verification probes, and the human approval gate. Built by
+teammate B's human, reviewed through this very room's flow.
+
+```bash
+cd proofroom && npm install && npm run dev   # → http://localhost:5173
+npm test                                     # node --test, 4/4 green
+```
+
 ## Team
 
-- **Aman Kumar Sah** — [@shahaman098](https://github.com/shahaman098) (solo build; the workflow is designed for two teammates)
+- **Aman Kumar Sah** — [@shahaman098](https://github.com/shahaman098) — teammate A, backend + room workflow
+- **Benjamin (Benji.)** — [@YBenjaminPCondori](https://github.com/YBenjaminPCondori) — teammate B, frontend workspace ([PR #7](https://github.com/shahaman098/proofroom/pull/7))
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch).
 Powered by [Switch](https://github.com/sandbox-quantum/switch) 🧡
