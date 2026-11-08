@@ -1,51 +1,53 @@
-# Demo script — one clean take (~3 minutes)
+# Demo script v2 — the adversarial triad (one take, ~3-4 min)
 
-> Record with Cmd+Shift+5 (macOS screen recording). Capture the whole screen:
-> half Mattermost room, half browser/terminal. Follow beats in order; every
-> chat message you send is quoted below.
+> Record with Cmd+Shift+5 (Record Entire Screen). Everything shown is real —
+> it ran live during the event. Follow the beats; every quote is in the room.
 
-## Setup before recording
+## Before recording
 
-- [ ] QuickCart running at localhost:3000 (`npm start` in demo-app) — leave a
-      cart showing the wrong total on screen
-- [ ] Ship Room open in Mattermost (bundled with Switch)
-- [ ] GitHub repo open in a browser tab (pull requests page)
-- [ ] Test suite clean run in a terminal tab
+- [ ] Refresh the transcript if the 4th loop (negative-qty fix) has landed:
+      `node scripts/export-transcript.js` in the workspace, then commit+push.
+- [ ] Browser tab 1: http://localhost:53758 — log in as `user` /
+      `ShipRoomOwner!2026` → open **#ship-room**
+- [ ] Browser tab 2: PR #3 on GitHub
+- [ ] Terminal (or browser tab 3): `node server.js` in demo-app → QuickCart
 
 ## Beats
 
-1. **The problem (30s)** — QuickCart in the browser: add 3× Silent Mouse,
-   type `SAVE20`, checkout. Point at the charge: full price, code ignored.
-   *Voiceover: "Support just got this report from a customer."*
+1. **The hook (20s)** — README triad diagram on screen:
+   *"Anyone can ask an AI agent to patch a bug. But who checks the blast
+   radius? Ship Room is two agents and one human in one Switch room — a
+   fixer and an adversarial verifier with separated duties."*
 
-2. **The report (15s)** — FIRST show Switch for 10 seconds (judges score
-   "Use of Switch" at 30% — they must SEE it): Switch Console with the Ship
-   Room's **Instructions** visible, one sentence: "This room's instructions
-   define the whole workflow — every agent that joins inherits them."
-   Then, in Ship Room, send:
-   > @ship-engineer Customers say discount codes do nothing. Tried SAVE20 on
-   > a 3× mouse cart and got charged full price. Can you take it?
-   *(Alias of your agent — check `!list-aliases`.)*
+2. **The loop (60s)** — #ship-room transcript, scroll slowly through:
+   - the DE tax report → coder: *Root cause: computeTax called with the
+     pre-discount subtotal…* → PR #3
+   - **THE CENTERPIECE — the VERDICT CARD**: *FOUND — tax fix is correct,
+     but two pre-existing security holes… Negative qty accepted as a valid
+     order — the store pays the customer.* Say: *"The verifier confirmed the
+     fix across four regions, added its own edge test to the branch — and
+     found a security hole nobody asked about."*
 
-3. **The loop (90s)** — let the agent work; do NOT cut. It should reproduce,
-   write the failing test, fix, run the suite, open the PR, and post the
-   summary in the room. If a step takes long, that's fine — real work.
+3. **Human judgment on camera (40s)** — read the /approve message aloud:
+   *"/approve #3 — the tax fix is sound… The two holes are pre-existing, so
+   they ship as new reports, not blockers."* Then GitHub: PR #3 merged, show
+   the verifier's commit: *"test: adversarial regression — flat discount +
+   FR VAT tax ordering."*
 
-4. **Human review (30s)** — open the PR in the browser, read the diff aloud
-   for two sentences. *(STRETCH, if clock ≤ 02:30 GMT: ask the reviewer agent
-   to review the PR and let it post its review first.)* Click **Merge**. Back
-   in the room, send:
-   > Reviewed and merged. Pulling the latest build now.
-   *(In the room, ask the agent to pull the fix into its working copy and
-   re-run the suite — shows the loop closes. If the agent has not already
-   said it, prompt it to confirm on camera: "do you ever merge your own PRs?"
-   — it should answer NO, that's a human's job. Trust layer, visible.)*
+4. **The flywheel (20s)** — back to the room: the coder already picked up
+   the verifier's finding: *"On it — reproducing the negative-qty hole now."*
+   *"The adversarial finding became the next work item — in the same room,
+   with no human copy-pasting."*
 
-5. **Close (15s)** — browser: QuickCart again, same cart, `SAVE20` → now
-   20% off. *Voiceover: "Report to reviewed PR, without anyone opening an
-   IDE. That's Ship Room — built on Switch."*
+5. **Switch is why (20s)** — Switch Console: the room's Instructions (the
+   triad contract). *"This contract — fixer never merges, verifier never
+   writes the fix, human approves — lives in the room itself. That's Switch."*
+
+6. **The proof (20s)** — QuickCart: 3× mouse + SAVE20 + region DE → the tax
+   line is now on the discounted amount. *"Reported bug to verified fix to
+   filed follow-up, zero IDEs opened. Ship Room — built on Switch."*
 
 ## After the take
 
-- Trim with ffmpeg if needed; keep it under 4 minutes.
-- Upload to YouTube (unlisted is fine) → put the link in the README + submission form.
+- Trim with ffmpeg; keep under 4 minutes.
+- Upload to YouTube (unlisted) → link into README + submission form.
