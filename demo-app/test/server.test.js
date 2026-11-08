@@ -40,7 +40,7 @@ describe('POST /api/checkout — stock validation', () => {
   });
 
   // Regression: a mixed cart where one item is over-stock must not partially
-  // deduct in-stock items before rejecting.
+  // deduct the in-stock items before rejecting (no partial fulfilment).
   test('returns 400 and does not deduct stock when one item exceeds stock', async () => {
     const freshApp = require('../server');
     // First order: exhaust all hub stock legitimately.
