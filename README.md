@@ -97,3 +97,21 @@ clean clone.
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch).
 Powered by [Switch](https://github.com/sandbox-quantum/switch) 🧡
+
+## 🫡 Steal this room
+
+This repo doubles as a playbook. To run this exact governance setup for your
+own team, you need three things — all in this repo:
+
+1. **The contract** — [`workflow/room-instructions.md`](workflow/room-instructions.md):
+   two agents, separated duties (fixer never merges, verifier never writes
+   the fix, evidence against exact commit SHAs, human approves).
+2. **The client contract suite** — [`proofroom-web`](https://github.com/shahaman098/proofroom-web):
+   pinned expectations for every client you can't re-release (shipped mobile
+   binaries, third-party integrations). This is the tripwire that catches
+   cross-repo breakage your own suite can't see.
+3. **The verdict card format** — see the transcript: `CLEAR ✅ / FOUND ⚠️`,
+   suite counts, probes run, commit SHAs. Copy the format; it makes agent
+   output reviewable by humans at a glance.
+
+Total setup cost: one Switch room, one pasted document, ten minutes.
