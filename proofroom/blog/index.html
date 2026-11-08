@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="How we built ProofRoom: shared context, cross-repository verification, and deliberate human approval with Switch."><meta name="theme-color" content="#f8f7f2"><title>When AI Agents Work Together, Who Checks the Gaps? Building ProofRoom with Switch — ProofRoom</title><link rel="stylesheet" href="./blog.css"><script type="module" src="./blog.js"></script></head>
+<body><a class="skip-link" href="#article">Skip to article</a>
+<header class="site-header"><a class="wordmark" href="../" aria-label="ProofRoom home"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i></span>PROOFROOM</a><nav aria-label="Site navigation"><a href="#contents">Contents</a><a class="repo-link" href="https://github.com/shahaman098/proofroom">Repository <span aria-hidden="true">↗</span></a><a href="../#demo">Explore the demo <span aria-hidden="true">↗</span></a></nav></header>
+<main id="article"><article>
+<header class="article-hero"><p class="eyebrow">FIELD NOTES <span>01 / ENGINEERING</span></p><h1>When AI Agents Work Together, Who Checks the Gaps? Building ProofRoom with Switch</h1><p class="subtitle">A hackathon build about shared context, cross-repository checks, and keeping humans in control.</p><dl class="metadata"><div><dt>Written together by</dt><dd>Aman Kumar Sah<br>Yehoshua Benjamin Perez Condori</dd></div><div><dt>Project / Event</dt><dd>ProofRoom<br>Flip the Switch Hackathon</dd></div><div><dt>Reading time</dt><dd>7 minutes</dd></div></dl></header>
+<nav class="contents-bar" id="contents" aria-label="Article sections"><details><summary><span class="contents-label">IN THIS ARTICLE</span><span class="current-section"><span class="current-number">01</span><span class="current-title">First, what is Switch?</span></span><span class="contents-toggle" aria-hidden="true">+</span></summary><ol><li><a href="#first-what-is-switch"><span>01</span>First, what is Switch?</a></li><li><a href="#the-problem-a-green-test-suite-isn-t-the-whole-story"><span>02</span>The problem: a green test suite isn’t the whole story</a></li><li><a href="#what-proofroom-does"><span>03</span>What ProofRoom does</a></li><li><a href="#why-switch-matters-to-the-workflow"><span>04</span>Why Switch matters to the workflow</a></li><li><a href="#making-the-workflow-visible"><span>05</span>Making the workflow visible</a></li><li><a href="#what-is-real-and-what-is-simulated"><span>06</span>What is real, and what is simulated?</a></li><li><a href="#try-the-frontend"><span>07</span>Try the frontend</a></li><li><a href="#what-we-learned"><span>08</span>What we learned</a></li><li><a href="#what-we-would-explore-next"><span>09</span>What we would explore next</a></li><li><a href="#references"><span>10</span>References</a></li></ol></details></nav>
+<div class="article-body"><div class="introduction"><p>An AI coding agent changes an API. Its tests pass. The change looks ready to ship.</p>
+<p>Then a teammate’s application tries to read a field that no longer exists.</p>
+<p>The agent completed its task, and the backend test suite is green. But a client depending on the API can no longer use the response. The failure lives <strong>between</strong> the pieces of software.</p>
+<p>That’s the problem we explored with <strong>ProofRoom</strong>: a workflow designed to help people and coding agents share requirements, check compatibility, and review evidence together before approving a change.</p>
+<p>We built it for the <a href="https://www.wemakedevs.org/hackathons/switch">Flip the Switch Hackathon</a>, hosted by <strong>WeMakeDevs and DevTools Academy</strong> and centred on <a href="https://github.com/sandbox-quantum/switch">Switch</a>. The challenge was to bring an AI agent into a team conversation and use it to get real work done alongside people.</p>
+<p>Our question was: <strong>what happens when the work involves more than one agent, more than one set of assumptions, and a human who needs to know what actually passed?</strong></p>
+</div>
+<section aria-labelledby="first-what-is-switch"><h2 id="first-what-is-switch">First, what is Switch?</h2>
+<p>Switch is open-source infrastructure for connecting AI agents with team chat.</p>
+<p>You bring the agent and the chat tools you want to use. Switch connects them through a <strong>room</strong>: a shared space where people and agents can exchange messages, instructions, tasks, and context.</p>
+<p>It does not replace your AI model or your chat application. Instead, it gives them a way to participate in a shared workflow.</p>
+<p>For a first-time user, we found it helpful to think of a Switch room as:</p>
+<blockquote><p>A shared workspace where people and agents can coordinate around a task, rather than a private conversation with one assistant.</p></blockquote>
+<p>The <a href="https://docs.switchagents.ai/switch-rooms/getting-started">Switch quickstart</a> is a good starting point if you want to explore it yourself.</p>
+</section>
+<section aria-labelledby="the-problem-a-green-test-suite-isn-t-the-whole-story"><h2 id="the-problem-a-green-test-suite-isn-t-the-whole-story">The problem: a green test suite isn’t the whole story</h2>
+<p>Our example centres on a checkout API. Suppose it initially returns:</p>
+<div class="code-block"><span class="code-label">JSON</span><pre tabindex="0" aria-label="json code"><code>{
+  &quot;total&quot;: 26.34
+}</code></pre></div>
+<p>A backend agent receives a request to expose more pricing information. It updates the response to use <strong><code>grandTotal</code></strong> and adds a tax breakdown. The backend tests are updated and pass.</p>
+<p>But an older client still expects:</p>
+<div class="code-block"><span class="code-label">JS</span><pre tabindex="0" aria-label="js code"><code>response.total</code></pre></div>
+<p>If <strong><code>total</code></strong> disappears, the client receives <strong><code>undefined</code></strong>. The backend may be working according to its new tests, but an existing consumer has lost a field it depends on.</p>
+<p>That’s the gap we wanted ProofRoom to make visible:</p>
+<blockquote><p>A change can be correct in isolation and still break an agreement between systems.</p></blockquote>
+</section>
+<section aria-labelledby="what-proofroom-does"><h2 id="what-proofroom-does">What ProofRoom does</h2>
+<p>ProofRoom brings a backend agent, a verifier agent, and a human into a shared workflow.</p>
+<ul><li>The <strong>backend agent</strong> proposes and implements a change.</li><li>The <strong>verifier agent</strong> checks the effects, including compatibility with clients.</li><li>The <strong>human</strong> supplies requirements, reviews the evidence, and decides whether to approve.</li></ul>
+<p>In the <a href="https://github.com/shahaman098/proofroom/blob/main/workflow/room-transcript.md">documented room transcript</a>, the backend changes the checkout response from <strong><code>total</code></strong> to <strong><code>grandTotal</code></strong>. The verifier reports that older clients relying on <strong><code>total</code></strong> would break.</p>
+<p>The documented repair restores <strong><code>total</code></strong> as a deprecated alias while retaining <strong><code>grandTotal</code></strong>. This allows the new response to coexist with the older contract.</p>
+<p>The point is not just to have a second agent say “looks good.” The workflow asks for a more useful handoff: <strong>what changed, what was checked, what failed, and which revisions were tested?</strong></p>
+<figure class="workflow-figure"><div class="figure-label">THE PROOFROOM WORKFLOW</div><ol class="workflow"><li><span class="step-number" aria-hidden="true">01</span><span>Human states a requirement</span></li><li><span class="step-number" aria-hidden="true">02</span><span>Backend agent proposes a change</span></li><li><span class="step-number" aria-hidden="true">03</span><span>Verifier checks compatibility</span></li><li><span class="step-number" aria-hidden="true">04</span><span>Evidence and revisions are shared in the Switch room</span></li><li><span class="step-number" aria-hidden="true">05</span><span>Human reviews and decides</span></li></ol><figcaption>One shared room. Evidence travels with the change; the approval stays human.</figcaption></figure>
+<p>The room does not replace tests. It gives the people and agents a shared place to coordinate around the requirements, evidence, and decisions.</p>
+</section>
+<section aria-labelledby="why-switch-matters-to-the-workflow"><h2 id="why-switch-matters-to-the-workflow">Why Switch matters to the workflow</h2>
+<p>Without shared context, each participant can have a different picture of the task.</p>
+<p>The backend agent may know about the new API response. The verifier may know what the client expects. A human may know that an older mobile version is already in users’ hands and cannot be updated immediately.</p>
+<p>A Switch room gives those participants a common place to communicate that information.</p>
+<p>For ProofRoom, that means the requirement <strong>“older clients must keep working”</strong> can be discussed alongside the proposed change and its verification results. The human does not have to reconstruct the story from separate conversations.</p>
+<p>The <a href="https://github.com/shahaman098/proofroom">ProofRoom repository</a> documents the workflow and includes its room instructions, demo application, client checks, and transcript.</p>
+</section>
+<section aria-labelledby="making-the-workflow-visible"><h2 id="making-the-workflow-visible">Making the workflow visible</h2>
+<p>Agent coordination can be difficult to explain from text alone. A transcript is useful evidence, but it does not immediately show how the repositories, requirements, checks, and approval decision relate to one another.</p>
+<p>So we also developed an interactive frontend on the <strong><code>feat/proofroom-frontend</code></strong> branch.</p>
+<p>The experience tells the story in five chapters:</p>
+<ol><li><strong>Propose:</strong> a backend change passes its local checks.</li><li><strong>Discover:</strong> a client dependency breaks.</li><li><strong>Capture:</strong> a human adds a compatibility requirement.</li><li><strong>Verify:</strong> the workflow presents a repair and checks.</li><li><strong>Review:</strong> a human sees the revisions awaiting approval.</li></ol>
+<p>On desktop, a pinned, scroll-linked scene moves through the connected workspace. On smaller screens and for reduced-motion users, the experience offers manual chapter navigation.</p>
+<p>The design goal was to turn an abstract coordination problem into something a reader could follow visually.</p>
+</section>
+<section aria-labelledby="what-is-real-and-what-is-simulated"><h2 id="what-is-real-and-what-is-simulated">What is real, and what is simulated?</h2>
+<p>We think this distinction matters enough to state plainly:</p>
+<div class="table-scroll" role="region" aria-label="Documented workflow and simulated frontend comparison" tabindex="0"><table><caption>Two parts of ProofRoom, with different scopes</caption><thead><tr><th scope="col"><strong>Component</strong></th><th scope="col"><strong>Scope</strong></th></tr></thead><tbody>
+<tr><th scope="row"><strong>Switch-room workflow</strong></th><td>The repository describes a workflow run through Switch and provides a room transcript, instructions, code, and reported test results.</td></tr>
+<tr><th scope="row"><strong>Interactive frontend</strong></th><td>A simulated presentation of the ProofRoom concept. It does not itself connect to live Switch rooms, GitHub, or test runners.</td></tr>
+</tbody></table></div>
+<p>The frontend is there to explain the workflow, not to impersonate a live integration. Its simulated activity is labelled accordingly.</p>
+</section>
+<section aria-labelledby="try-the-frontend"><h2 id="try-the-frontend">Try the frontend</h2>
+<p>The frontend README lists Node.js <strong>20.19+ or 22.12+</strong> as a prerequisite.</p>
+<div class="code-block"><span class="code-label">BASH</span><pre tabindex="0" aria-label="bash code"><code>git clone https://github.com/shahaman098/proofroom.git
+cd proofroom
+git checkout feat/proofroom-frontend
+cd proofroom
+npm ci
+npm run dev</code></pre></div>
+<p>Open the local URL printed by Vite.</p>
+<p>You can also run the frontend’s tests and production build:</p>
+<div class="code-block"><span class="code-label">BASH</span><pre tabindex="0" aria-label="bash code"><code>npm test
+npm run build</code></pre></div>
+<p>These commands test and build the <strong>frontend</strong>. They do not start the documented Switch-room workflow.</p>
+<p>To explore that workflow, start with the <a href="https://github.com/shahaman098/proofroom#reproduce-our-setup-10-minutes">main repository’s setup instructions</a> and the <a href="https://docs.switchagents.ai/switch-rooms/getting-started">Switch quickstart</a>.</p>
+</section>
+<section aria-labelledby="what-we-learned"><h2 id="what-we-learned">What we learned</h2>
+<h3>1. Passing tests answer a specific question</h3>
+<p>A green backend suite tells us that the checks in that suite passed. It does not automatically prove that an older client or another service remains compatible.</p>
+<p>The useful follow-up is: <strong>what assumptions sit outside this test suite?</strong></p>
+<h3>2. Human context needs a path into verification</h3>
+<p>“Older clients must keep working” may begin as a message from a teammate. It becomes more actionable when it is shared with the agents and represented by a compatibility check.</p>
+<p>A room makes the requirement visible; the check gives the team a way to evaluate it.</p>
+<h3>3. Evidence is more useful when it identifies the revisions</h3>
+<p>A statement such as “tests passed” is incomplete without knowing <em>what</em> was tested. If the code changes after verification, a previous approval may no longer apply.</p>
+<p>ProofRoom’s approval concept is therefore tied to the specific revisions and requirements under review.</p>
+<h3>4. Human approval should stay deliberate</h3>
+<p>Agents can gather evidence and highlight problems, but the human should be able to understand the decision in front of them.</p>
+<p>In the frontend, scrolling through the story does not approve a change. Presentation and approval are separate.</p>
+<h3>5. A prototype is stronger when its limits are clear</h3>
+<p>The frontend lets someone understand and explore the concept quickly. The documented Switch workflow shows a different, more technical part of the project.</p>
+<p>Being clear about that boundary helps readers see both what exists now and what would be needed to connect the two.</p>
+</section>
+<section aria-labelledby="what-we-would-explore-next"><h2 id="what-we-would-explore-next">What we would explore next</h2>
+<p>A next step would be to investigate whether the frontend could display <strong>real Switch-room events and verification evidence</strong> instead of simulated activity.</p>
+<p>That would mean thinking carefully about permissions, where evidence comes from, and how to ensure that an approval refers to the exact revisions a person reviewed.</p>
+<p>For now, ProofRoom has given us a way to explore a question that becomes increasingly important as teams use more coding agents:</p>
+<blockquote><p>It’s not enough for each agent to finish its own task. How do we help the whole team understand whether the pieces work together?</p></blockquote>
+</section><section class="references" aria-labelledby="references"><h2 id="references">References</h2><ol><li><a href="https://github.com/shahaman098/proofroom">ProofRoom repository <span aria-hidden="true">↗</span></a></li><li><a href="https://github.com/shahaman098/proofroom/tree/feat/proofroom-frontend">Frontend source branch <span aria-hidden="true">↗</span></a></li><li><a href="https://github.com/shahaman098/proofroom/blob/main/workflow/room-transcript.md">Documented room transcript <span aria-hidden="true">↗</span></a></li><li><a href="https://docs.switchagents.ai/switch-rooms/getting-started">Switch quickstart <span aria-hidden="true">↗</span></a></li></ol></section></div>
+<aside class="read-next"><p class="eyebrow">FROM THE NOTES TO THE WORKSPACE</p><h2>See how the pieces fit.</h2><p>Explore the simulated walkthrough, review the evidence, and make the approval decision yourself.</p><a href="../#demo">Explore the interactive demo <span aria-hidden="true">↗</span></a></aside>
+</article></main>
+<footer class="site-footer"><div><a class="wordmark" href="../">PROOFROOM</a><p>Shared context. Tested connections. Human decisions.</p><small>Built together for the Flip the Switch Hackathon.</small></div><nav aria-label="Footer navigation"><a href="https://github.com/shahaman098/proofroom">Repository ↗</a><a href="https://github.com/sandbox-quantum/switch">Switch ↗</a><a href="https://www.wemakedevs.org/hackathons/switch">Hackathon ↗</a><a href="#article">Back to article ↑</a></nav></footer>
+</body></html>

@@ -14,7 +14,7 @@ export default function Walkthrough(){
  }
  return <section className={`walkthrough ${manual?'manual':''}`} ref={root} id="top" aria-label="ProofRoom walkthrough" data-progress={progress.toFixed(4)} data-chapter={frame.active+1}>
   <div className="story-stage" id="walkthrough">
-   <header className="nav"><a className="logo" href="#top" aria-label="ProofRoom home"><span className="mark" aria-hidden="true"><i/><i/><i/></span>PROOFROOM</a><nav aria-label="Main navigation"><a href="#walkthrough">The walkthrough</a><a href="#demo">Try the demo ↗</a></nav></header>
+   <header className="nav"><a className="logo" href="#top" aria-label="ProofRoom home"><span className="mark" aria-hidden="true"><i/><i/><i/></span>PROOFROOM</a><nav aria-label="Main navigation"><a href="#walkthrough">The walkthrough</a><a className="blog-link" href="./blog/">Our build</a><a href="#demo">Try the demo ↗</a></nav></header>
    <div className="story-intro"><div><p className="eyebrow">YOUR AGENTS. ONE SHARED ROOM.</p><h1>Good alone.<em> Proven together.</em></h1></div><p>Catch the break between repositories.<br/>Approve the exact code that passed.</p></div>
    <div className="story-layout" onTouchStart={e=>{touch.current=[e.touches[0].clientX,e.touches[0].clientY];}} onTouchEnd={e=>{if(!manual||!touch.current)return;const [x,y]=touch.current;const dx=e.changedTouches[0].clientX-x,dy=e.changedTouches[0].clientY-y;touch.current=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.3)go(Math.max(0,Math.min(4,frame.active+(dx<0?1:-1))));}} onTouchCancel={()=>{touch.current=null;}}>
     <div className="story-cards" aria-label="Walkthrough explanation">

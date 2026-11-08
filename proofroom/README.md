@@ -40,3 +40,7 @@ Desktop sections have a 560px minimum viewport height. Mobile manual sections ha
 - Reduced-motion logic was tested with an emulated matchMedia preference and rendered static illustrations. No OS setting was changed. Physical touch gestures were not tested on a touch device.
 
 All activity is simulated. Switch rooms, GitHub, agent execution and tests are not connected to live services. A real coordinator must enforce approval rules server-side.
+
+## Build article
+
+The same site serves the full technical article at `/blog/`, linked as “Our build” from the landing page. `blog/index.html` contains the complete article in initial HTML; `blog/blog.css` provides the editorial layout and `blog/blog.js` progressively enhances the native table of contents. No JavaScript is required to read the article or use its section links. Vite builds both page entry points into the same `dist/` directory. The long-form article is intentionally outside the landing page’s three-viewport budget.
