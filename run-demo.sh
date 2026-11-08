@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # One command to run everything: QuickCart backend (:3000) + ProofRoom frontend (Vite).
 # Usage: ./run-demo.sh        (needs Node 20.19+ or 22.12+)
+#        FRONTEND_PORT=5190 ./run-demo.sh   (if 5173 is taken by another project)
 set -euo pipefail
 cd "$(dirname "$0")"
 echo "Installing dependencies (first run only)…"
@@ -20,4 +21,4 @@ echo
 echo "Backend:  http://localhost:3000"
 echo "Frontend: see the Vite URL below (scroll to “Try it on the real backend”)"
 echo
-cd proofroom && npm run dev
+cd proofroom && npm run dev -- --port "${FRONTEND_PORT:-5173}"
