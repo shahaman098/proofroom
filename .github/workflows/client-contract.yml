@@ -1,0 +1,28 @@
+# Gate 2: the shipped clients' contract, run against the backend built from this commit.
+# This is the gate that was RED on PR #5 (fd023c7): `total` was gone from the response.
+name: client-contract
+on:
+  push:
+  pull_request:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            demo-app/package-lock.json
+            clients/package-lock.json
+      - run: npm ci
+        working-directory: demo-app
+      - run: npm ci
+        working-directory: clients
+      - name: Start the backend and run the client contract suite
+        run: |
+          (cd demo-app && PORT=3000 node server.js) &
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/api/products >/dev/null && break; sleep 0.5; done
+          curl -sf http://localhost:3000/api/products >/dev/null || { echo "backend did not start"; exit 1; }
+          cd clients && API_BASE=http://localhost:3000 npm test

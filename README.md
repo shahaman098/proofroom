@@ -76,6 +76,28 @@ conversation. This demo ran **live during the event** (all timestamps GMT):
 
 Full transcript: [`workflow/room-transcript.md`](workflow/room-transcript.md).
 
+## Two gates, one contract
+
+The repo has two independent GitHub Actions gates (`.github/workflows/`), plus a
+frontend build:
+
+- **`backend`** runs the backend's own suite (`demo-app/`).
+- **`client-contract`** starts the backend built from the same commit and runs the
+  shipped clients' contract suite (`clients/`) against it.
+
+Same two commits from the room run, run locally against each:
+
+| Backend commit | Backend's own suite | Client contract suite |
+|---|---|---|
+| `fd023c7` (PR #5, the rename) | **25/25 pass** | **4 of 5 fail** (`total` is missing) |
+| `b13234f` (PR #6, the compat fix) | **28/28 pass** | **5/5 pass** |
+
+That is the whole story in one table: the backend gate was green on PR #5 while
+the client gate was red, and only the room put the two results side by side. (The
+clients' suite is today's `clients/`; during the run it lived in a separate repo
+and was folded in later in `0b25a52`.) The workflows run on every push and pull
+request once they are on GitHub.
+
 ## Earlier the same day: the room's 4 merged bug-fix PRs
 
 Before the cross-repo demo, this same room ran its fix pipeline live —
@@ -96,7 +118,10 @@ clean clone.
 - **One room, two repos, two owners.** The room's **Instructions** (see
   [`workflow/room-instructions.md`](workflow/room-instructions.md)) define the
   cross-repo contract — who owns what, what evidence looks like, who merges.
-  Each agent works in its own workspace; the room is their shared context.
+  Each side has its own gate (the backend suite and the client contract suite,
+  see [Two gates](#two-gates-one-contract)) and each agent keeps its own working
+  copy. Neither gate sees the other's result, so the room is where the evidence
+  comes together.
 - **Evidence exchange through chat**: verdict cards with failing output,
   field lists, and commit SHAs flow between agents exactly like teammate
   messages — because in Switch, they *are* teammate messages.

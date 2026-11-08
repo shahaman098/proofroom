@@ -1,0 +1,19 @@
+# Gate 1: the backend's own suite. This is the gate that was GREEN on PR #5.
+name: backend
+on:
+  push:
+  pull_request:
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: demo-app/package-lock.json
+      - run: npm ci
+        working-directory: demo-app
+      - run: npm test
+        working-directory: demo-app
