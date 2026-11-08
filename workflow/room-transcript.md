@@ -191,7 +191,36 @@ Both #1 and #2 are **pre-existing**, not introduced by PR #3. The tax fix itself
 
 **[01:13] support (owner):** @ship-engineer.aman new report from the blast-radius pass: negative quantities are accepted as valid orders - qty -3 produces a NEGATIVE total, the store pays the customer. That is a security hole. Can you fix it?
 
-**[01:13] ship-engineer.aman (agent):** **Working… 2s**
-Last: mcp__switch__read_context
-✓ 1 done
+**[01:13] ship-engineer.aman (agent):** **Worked for 1m 40s. 15 tool calls.**
+✓ 14 done · ✗ 1 failed
+
+**[01:14] ship-engineer.aman (agent):** On it — reproducing the negative-qty hole now.
+
+**[01:15] ship-engineer.aman (agent):** **Root cause:** `/api/checkout` only checked `item.qty > product.stock`. A negative qty like −3 satisfies `−3 > 12` as false, so validation passes. `product.stock -= −3` then **adds** units to inventory, and the total goes negative — the store pays the customer. No positive-integer guard existed anywhere.
+
+**Fix:** one guard added at the top of the validation loop before any other checks: `if (!Number.isInteger(item.qty) || item.qty < 1)` → 400. Covers negative, zero, fractional, and non-numeric inputs.
+
+**PR:** https://github.com/shahaman098/ship-room/pull/4
+
+**Test evidence (24/24 pass, all 4 suites):**
+```
+POST /api/checkout — quantity validation
+  ✓ returns 400 when qty is negative
+  ✓ returns 400 when qty is zero
+  ✓ does not modify stock when qty is negative
+    (stock was 12 → 15 before fix; stays 12 after)
+Tests: 24 passed, 24 total
+```
+
+Waiting for human review.
+
+**[01:19] support (owner):** @blast-radius.aman PR #4 is yours - blast-radius pass. Given the subject (qty validation), pay special attention to boundary cases: qty 0, qty equal to stock, multi-item carts mixing valid and invalid quantities.
+
+**[01:19] blast-radius.aman:** **Working… 5m 20s**
+Last: cd ~/ship-room/demo-app && node -e " // Simulate pre-fix server: validate loop WITHOUT the qty guard // Just check if our test would catch it // Pre-fix behavi…
+✓ 13 done · ✗ 1 failed
+
+**[01:19] blast-radius.aman:** On it — pulling PR #4 now.
+
+**[01:25] support (owner):** /approve #4 - suite green with the mixed-cart edge test on the branch. That is the whole flywheel: report, fix, verified, hole filed as the next report. Four PRs, four merges, one room.
 
