@@ -17,8 +17,11 @@ git clone https://github.com/shahaman098/proofroom && cd proofroom
 Open the Vite URL it prints and scroll to **“Try it on the real backend”**:
 place an order, then tick **Replay PR #5**. You'll watch the old v1.2 mobile
 app break against the real API: the exact failure our two agents caught in
-the Switch room. (This is the shortcut for the *product*; the *workflow* runs in a Switch room: see [Reproduce our setup](#reproduce-our-setup-10-minutes). Prefer to run the pieces yourself? See
-[`proofroom/`](proofroom/).)
+the Switch room.
+
+This shortcut runs the *product*. The *workflow* runs in a Switch room: see
+[Reproduce our setup](#reproduce-our-setup-10-minutes). To run the pieces
+yourself, see [`proofroom/`](proofroom/).
 
 ## How ProofRoom maps to the judging criteria
 
@@ -27,12 +30,12 @@ the Switch room. (This is the shortcut for the *product*; the *workflow* runs in
 | **Use of Switch** | The room *is* the product. Remove it and the two agents can't share requirements or evidence. See [Why Switch is central](#why-switch-is-central-the-project-fails-without-it) and the [full transcript](workflow/room-transcript.md). |
 | **Technical execution** | `./run-demo.sh`; backend `28/28`, client contract suite `5/5`, frontend `7/7` tests. The commits named in the walkthrough (`fd023c7`, `b13234f`, `405f440`, `fe4c9c3`) exist on GitHub. |
 | **Creativity and impact** | A real cross-team failure (a renamed field breaking shipped mobile apps) that no single repo's tests could see, caught, fixed and approved about 12 minutes after the first check was requested (01:33 → 01:45 GMT). |
-| **Presentation** | The demo video (linked at the top once uploaded), the replayed walkthrough in [`proofroom/`](proofroom/), and the live panel. |
+| **Presentation** | The [demo video](https://github.com/shahaman098/proofroom/releases/download/demo-v2/proofroom-demo-v2.mp4) (3m40s), the replayed walkthrough in [`proofroom/`](proofroom/), and the live panel. |
 
 ## The problem
 
 Every developer has lived this: your coding agent changes an API, your suite
-is green, you ship — and a teammate's frontend breaks an hour later. a change can pass every test in
+is green, you ship — and a teammate's app breaks later. A change can pass every test in
 its own repo and still break someone else's code, because no single repo's tests
 can see across the boundary. Agents work alone even when their humans are teammates.
 
@@ -49,26 +52,27 @@ repositories** — into **one shared Switch room**:
 Switch carries their **requirements, handoffs and decisions** in one
 conversation. This demo ran **live during the event** (all timestamps GMT):
 
-1. **01:31** — Teammate A asks their agent to rename `total` → `grandTotal`
-   and add `taxBreakdown` to the checkout response. Done in **80 seconds**;
-   backend suite green; PR #5 merged with commit `fd023c7` reported in the room.
-2. **01:37** — Teammate B orders the contract suite run, with the requirement:
+1. **01:30** — Teammate A asks their agent to rename `total` → `grandTotal`
+   and add `taxBreakdown` to the checkout response. Done in **80 seconds** (01:31);
+   backend suite 25/25 green; PR #5, commit `fd023c7`, reported in the room.
+2. **01:33** — Teammate B orders the contract suite run, with the requirement:
    *"the v1.2 mobile binaries are already shipped to the App Store — older
    mobile clients MUST keep working."*
-   → **VERDICT CARD: "FOUND — BLOCKING. Do not ship the mobile release tomorrow."**
+   At **01:38** the verdict arrives:
+   **VERDICT CARD: "FOUND — BLOCKING. Do not ship the mobile release tomorrow."**
    The break, proven with a probe: `response.total → undefined` while
    `response.grandTotal → 26.34 ✓`. Each repo was green in isolation — the
    breakage only existed **between** them, and only the room could see it.
-3. **01:39** — The agents converge through the room. The backend agent's own
+3. **01:38–01:39** — The agents converge through the room. The backend agent's own
    root-cause note admits: *"the old contract had zero test coverage."*
    Compat fix: `total` restored as a deprecated alias + `X-API-Version`
    header + compat tests (PR #6, commit `b13234f`).
-4. **01:44** — Teammate B's agent re-runs the contract suite:
+4. **01:43** — Teammate B's agent re-runs the contract suite:
    **VERDICT CARD: CLEAR** — 28/28, contract probes 10/10,
    `total === grandTotal` under DE+SAVE20, **verified against exact commits
    `b13234f` and `405f440`**.
-5. **01:45** — Human: `"/approve — both sides green, evidence against exact
-   commits from both agents."`
+5. **01:45** — The room owner: `"/approve — both sides green, evidence against exact
+   commits from both agents."` (In the live run one room owner played both teammate roles; the two agents were separate.)
 
 Full transcript: [`workflow/room-transcript.md`](workflow/room-transcript.md).
 
@@ -92,12 +96,12 @@ clean clone.
 - **One room, two repos, two owners.** The room's **Instructions** (see
   [`workflow/room-instructions.md`](workflow/room-instructions.md)) define the
   cross-repo contract — who owns what, what evidence looks like, who merges.
-  Neither agent can see the other's CI; the room is the only shared context.
+  Each agent works in its own workspace; the room is their shared context.
 - **Evidence exchange through chat**: verdict cards with failing output,
   field lists, and commit SHAs flow between agents exactly like teammate
   messages — because in Switch, they *are* teammate messages.
-- **Identity & trust**: the room knows which human is which teammate
-  (unlinked accounts are refused by the agent — on record in the transcript).
+- **Roles in writing**: the Instructions say the verifier never merges, the
+  fixer never approves its own fix, and only the human merges.
 - **Bundled Mattermost**: both humans join from chat with nothing to install.
 - Delete the room and the collaboration doesn't exist — there is no app, no
   dashboard, no CI magic. The room *is* the product.
@@ -160,28 +164,34 @@ _Captured live on the build machine during the event. The `total` alias and `gra
 
 ## 🖥️ Frontend workspace (by teammate B)
 
-[`proofroom/`](proofroom/) — a scroll-driven replay of the live room run above, plus a live panel on the real API:
-the QuickCart API and the v1.2 mobile clients connected through the Switch
-room, with the real commits (`fd023c7` → `b13234f` + `405f440`, contract test
-`fe4c9c3`), the *FOUND — BLOCKING* → *CLEAR* verdict cards, and an interactive
-`/approve` gate that goes stale if a new commit lands. Built by teammate B's
-human, reviewed through this very room's flow. Replay only: not connected to
-live services.
+[`proofroom/`](proofroom/) has two parts:
 
-The page also has a **live panel** that talks to the real QuickCart backend:
-build a cart, pick a region and discount code, and it `POST`s to `/api/checkout`.
-The response is then checked exactly the way the two real clients check it
-(`clients/web-client.js` and `clients/mobile-client-v1.js`). A toggle replays
-PR #5 by hiding `total` from that same response, so you can see the old mobile
-app break against your own backend.
+- **A scroll-driven replay** of the live room run above: the QuickCart API and
+  the v1.2 mobile app connected through the Switch room, with the real commits
+  (`fd023c7` → `b13234f` + `405f440`, test `fe4c9c3`), the *FOUND — BLOCKING* →
+  *CLEAR* verdict cards, and an interactive `/approve` gate that goes stale if a
+  new commit lands. This part is a replay and is not connected to live services.
+- **A live panel** that talks to the real QuickCart backend: build a cart, pick a
+  region and discount code, and it `POST`s to `/api/checkout`. The response is
+  checked the way the two real clients check it (`clients/web-client.js`,
+  `clients/mobile-client-v1.js`). A toggle replays PR #5 by hiding `total` from
+  that same response, so you can watch the old mobile app break against your own
+  backend.
 
 ```bash
+./run-demo.sh                                # backend + frontend in one command
+# or run them separately:
 cd demo-app && npm install && npm start      # backend → http://localhost:3000
 cd proofroom && npm install && npm run dev   # frontend → http://localhost:5173 (proxies /api to the backend)
-npm test                                     # node --test, 7/7 green (includes parity tests against clients/)
+npm test                                     # 7/7 (includes parity tests against clients/)
 ```
 
-Without the backend running, the live panel shows how to start it; the walkthrough and approval replay still work.
+Without the backend, the live panel shows how to start it; the replay still works.
+
+## More
+
+- [Demo script](workflow/demo-script.md) · [Blog post draft](workflow/blog-post.md) · [#HowISwitch social copy](workflow/social-post.md)
+- [Room Instructions](workflow/room-instructions.md) · [Full room transcript](workflow/room-transcript.md)
 
 ## Team
 
