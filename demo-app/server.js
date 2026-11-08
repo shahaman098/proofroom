@@ -63,6 +63,7 @@ app.post('/api/checkout', (req, res) => {
   const grandTotalCents = afterDiscountCents + taxCents + shippingCents;
 
   const orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
+  res.set('X-API-Version', '2');
   res.json({
     orderId,
     region,
@@ -77,6 +78,7 @@ app.post('/api/checkout', (req, res) => {
       shipping: shippingCents / 100,
     },
     grandTotal: grandTotalCents / 100,
+    total: grandTotalCents / 100, // deprecated alias — kept for v1.2 client compatibility
   });
 });
 
