@@ -72,7 +72,11 @@ app.post('/api/checkout', (req, res) => {
     discountApplied: discountCode || null,
     tax: taxCents / 100,
     shipping: shippingCents / 100,
-    total: grandTotalCents / 100,
+    taxBreakdown: {
+      tax: taxCents / 100,
+      shipping: shippingCents / 100,
+    },
+    grandTotal: grandTotalCents / 100,
   });
 });
 

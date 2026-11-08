@@ -167,6 +167,7 @@ describe('POST /api/checkout — tax on discounted total', () => {
     // Correct: €8.90; buggy pre-fix path would return €9.90 (€1.00 overcharge).
     expect(res.body.tax).toBe(8.90);
     // Grand total must reconcile: 44.50 + 8.90 + 4.95 = 58.35
-    expect(res.body.total).toBe(58.35);
+    expect(res.body.grandTotal).toBe(58.35);
+    expect(res.body.taxBreakdown).toEqual({ tax: 8.90, shipping: 4.95 });
   });
 });
