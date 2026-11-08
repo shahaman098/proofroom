@@ -11,7 +11,7 @@ Live URLs for optional tracks (edit [`workflow/submission-links.md`](workflow/su
 | Track | Live URL | Draft in repo |
 |-------|----------|---------------|
 | Best Blog | [DEV Community post](https://dev.to/shahaman098/two-agents-one-room-how-we-caught-a-bug-neither-repos-tests-could-see-5il) | [`workflow/blog-post.md`](workflow/blog-post.md) |
-| #HowISwitch | see submission-links | [`workflow/social-post.md`](workflow/social-post.md) |
+| #HowISwitch | [X post](https://x.com/KrisKumarS26166/status/2119292815897239762) | [`workflow/social-post.md`](workflow/social-post.md) |
 
 ## What happened
 

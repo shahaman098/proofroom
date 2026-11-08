@@ -1,6 +1,6 @@
 # #HowISwitch social copy — post-ready
 
-> **Published post:** set the live X or LinkedIn URL in [`submission-links.md`](./submission-links.md) (not this file).
+> **Published post:** https://x.com/KrisKumarS26166/status/2119292815897239762 (draft copy below).
 
 ## Option A — X/Twitter (fits 280, post with a screenshot of the verdict card)
 
