@@ -1,8 +1,8 @@
-# ProofRoom demo script (v5)
+# ProofRoom demo script (v6)
 
-Target length: about 3 min 15 s. About 440 spoken words at a calm 150 words per minute, plus pauses between beats.
+Target length: about 3 min 15 s, plus pauses between beats.
 
-How to record: read straight through, face to camera, in one take if you can. Leave about one second of silence between beats (marked `[BEAT]`). That gives me clean cut points. If you stumble, pause, repeat the sentence, and keep going; I'll cut to the clean take.
+How to record: talk it, don't read it. Say it in your own words if that feels more natural, as long as the facts stay the same (the numbers, the commit names, the timestamps). Face to camera, one take if you can. Leave about one second of silence between beats (marked `[BEAT]`). That gives me clean cut points. If you stumble, pause, repeat the sentence, and keep going; I'll cut to the clean take.
 
 Every `[SHOW]` line says what is on screen while you say the sentence. All of it is captured live from the real system. Nothing is mocked.
 
@@ -10,7 +10,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 1: Hook (about 18 s)
 
-"Your coding agent says the change works. But does it work for your teammates? I'm Aman, and this is ProofRoom: two teammates, two coding agents, and one Switch room."
+"You know that moment when your coding agent says "done, tests pass" and you just ship it? That's what this project is about. I'm Aman, and ProofRoom puts two teammates' agents in one Switch room, so someone actually checks the change before it goes out."
 
 [SHOW] GitHub repo page, README top. Then the Switch Console app on the #proofroom room.
 
@@ -18,7 +18,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 2: The change (about 30 s)
 
-"Here's the room from the live run. At 01:30 I asked my backend agent to rename one field in the checkout response, total, to grandTotal. It finished in 80 seconds. And here's the code at that commit, with all 25 of its tests passing."
+"Here's what happened in the room. At 01:30 I asked my backend agent to rename one field in the checkout response: total becomes grandTotal. Eighty seconds later it was done, and all 25 of its tests passed. I can run them right here, on that exact commit. Green."
 
 [SHOW] Room scrolled to 01:30 (request) and 01:31 (agent reply with commit fd023c7). Terminal: `git show --stat fd023c7`, then the backend suite at that commit: `Tests: 25 passed, 25 total`.
 
@@ -26,7 +26,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 3: The break (about 45 s)
 
-"Now my teammate's side. They asked a second agent to check the change before the mobile release, because the old version 1.2 app is already shipped. At 01:38 the verdict came back: do not ship. Let me prove it. This is my backend at that commit. I send a checkout request. The new field, grandTotal, is there. The old field, total, is gone. And here is the client contract suite against it: four of five tests fail. My own suite was green. This one is red."
+"But my teammate's agent wasn't convinced. The old mobile app is already out in the App Store, so it checked that first, and at 01:38 it came back with: don't ship this. Here's why. This is my backend at that commit. I ask for a checkout, and grandTotal is there, but total? Gone. The old app reads total. And the client tests agree: four out of five fail. My tests were green. Theirs were red."
 
 [SHOW] Room: 01:33 request, 01:38 verdict card. Terminal: start the backend at fd023c7 on a spare port; `curl` the checkout and pipe through `jq` to show `total` is null and `grandTotal` is 26.34; run the client contract suite: `4 failed, 1 passed`.
 
@@ -34,7 +34,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 4: Why the tests missed it (about 30 s)
 
-"Why was my suite green? The one test that read total had been rewritten to read grandTotal in the same commit. So the verifier added a regression test. Here it is. On my change it fails: expected total to be defined, received undefined. On the fix, it passes."
+"So why didn't my tests catch it? Because the one test that checked total had been rewritten to check grandTotal, in the same commit. Nothing was watching the old field anymore. So the verifier added a test for it. On my change, it fails: total is undefined. After the fix, it passes."
 
 [SHOW] Terminal: `git show fe4c9c3` (the test). Run that test file at fd023c7: `1 failed, 25 passed`. Run it at b13234f: `26 passed`.
 
@@ -42,7 +42,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 5: The fix (about 30 s)
 
-"I asked my agent to keep total as a deprecated alias, add a version header, and add tests for both. That's commit b13234f. Here's the diff: total is back next to grandTotal, and the header is set. Nothing was removed. The suite now has 28 tests, and all 28 pass."
+"So I told my agent: keep total as an alias, add a version header, and write tests for both. That's this commit. Look at the diff: total is back next to grandTotal, and nothing was removed. All 28 tests pass."
 
 [SHOW] Room 01:38 to 01:39 messages. Terminal: `git show b13234f -- demo-app/server.js`; then `Tests: 28 passed, 28 total`.
 
@@ -50,7 +50,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 6: Clear, then approve (about 25 s)
 
-"The verifier then re-ran everything against the exact commits and reported clear: twenty-eight of twenty-eight tests and ten of ten contract probes. Here's the client suite against the fixed backend: five of five. Then a human typed approve."
+"Then the verifier checked everything again against those exact commits and said all clear. That's 28 tests, plus its ten contract checks, by its own count. And here are the client tests against the fixed backend: five out of five. After that, I approved it."
 
 [SHOW] Room: 01:43 CLEAR verdict card, 01:45 `/approve`. Terminal: client contract suite against b13234f: `5 passed, 5 total`.
 
@@ -58,7 +58,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 7: The frontend on the real backend (about 45 s)
 
-"I also built a frontend that talks to this real backend. I'll order three mice to Germany with the code SAVE20. The backend answers: sixty-two oh five, with the tax and shipping split out. The old mobile app check passes. Now I'll tick replay PR number 5. That removes the total field from this same response, locally, just as PR 5 did. The old app breaks. Missing: total."
+"I also built a frontend on top of the real backend. Let's order three mice to Germany with the code SAVE20. Sixty-two oh five, with tax and shipping broken out, and the old-app check passes. Now watch: I tick "replay PR 5". That just removes the total field from this same response, right here in the browser, the way PR 5 did. And now the old app breaks. Missing: total."
 
 [SHOW] Browser at the frontend, "Try it on the real backend" panel. Cart: 3 mice, Germany, SAVE20, place order, `HTTP 200`, `$62.05`, "Works". Tick the toggle: "Breaks: missing total". Briefly show the raw response.
 
@@ -66,7 +66,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 8: Why Switch (about 25 s)
 
-"This only works because of Switch. The room's instructions say who owns what and who can merge. And agents only take orders from their linked owner. Here, at 00:30, an unlinked account asked my agent for a fix, and it declined. The same request from the linked account was accepted."
+"So why does this need Switch? Because the room holds everything: the requirement, the evidence, the decision. The instructions spell out who owns what, and that only a human merges. And agents only take orders from their owner. Here, at 00:30, an account that wasn't linked asked for a fix, and my agent said no. The same request from the linked account at 00:36 went through."
 
 [SHOW] Switch Console room Instructions. Room at 00:30: the declined message, then 00:36.
 
@@ -74,7 +74,7 @@ Every `[SHOW]` line says what is on screen while you say the sentence. All of it
 
 ## BEAT 9: Close (about 12 s)
 
-"Your agent says it works. ProofRoom checks whether it works for your teammates. Clone the repo and run one script to try it yourself."
+"So that's ProofRoom. Your agent says it works. This checks whether it works for your teammates. Clone the repo, run one script, and try it yourself."
 
 [SHOW] README quick start on GitHub, then `./run-demo.sh` printing the backend and frontend URLs.
 
