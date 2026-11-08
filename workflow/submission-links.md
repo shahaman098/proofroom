@@ -4,7 +4,7 @@ Point the hackathon form and this file at the **live** posts, not the markdown d
 
 | Track field | Live URL |
 |-------------|----------|
-| **Blog post** (Best Blog) | _paste published URL (e.g. dev.to)_ |
+| **Blog post** (Best Blog) | https://dev.to/shahaman098/two-agents-one-room-how-we-caught-a-bug-neither-repos-tests-could-see-5il |
 | **Your #HowISwitch post** | _paste live X or LinkedIn post URL_ |
 
 ## Drafts (repo copy only)

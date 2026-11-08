@@ -1,6 +1,6 @@
 # Two agents, one room: how we caught a bug neither repo's tests could see
 
-> **Published post:** set the live URL in [`submission-links.md`](./submission-links.md) (not this file).
+> **Published post:** https://dev.to/shahaman098/two-agents-one-room-how-we-caught-a-bug-neither-repos-tests-could-see-5il (draft copy below).
 
 *Draft for the Flip the Switch Best Blog track. Every number below comes from our
 room transcript (`workflow/room-transcript.md`) or from re-running the code.*
