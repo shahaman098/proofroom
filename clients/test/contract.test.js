@@ -2,8 +2,8 @@
 // These are the tests that catch cross-repo breakage. Run with API_BASE
 // pointing at the backend under test.
 
-const { placeOrder, renderSummary } = require('../clients/web-client');
-const { mobileCheckout, V1_CONTRACT_FIELDS } = require('../clients/mobile-client-v1');
+const { placeOrder, renderSummary } = require('../web-client');
+const { mobileCheckout, V1_CONTRACT_FIELDS } = require('../mobile-client-v1');
 
 const API_BASE = process.env.API_BASE || 'http://localhost:3000';
 const CART = [{ id: 'mouse', qty: 2 }];
