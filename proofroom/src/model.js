@@ -15,7 +15,7 @@ export function reducer(state, action) {
   if (action.type === 'RESET') return {...initialState};
   if (action.type === 'NEXT' && state.step < 4) return {...state, step: state.step + 1};
   if (action.type === 'APPROVE' && canApprove(state)) {
-    return {...state, step: 5, approval: fingerprint(state)};
+    return {...state, step: 5, approval: fingerprint(state), lastApproval: fingerprint(state)};
   }
   if (action.type === 'CHANGE' && state.step === 5) {
     return {...state, step: 6, approval: null, changeCount: state.changeCount + 1};

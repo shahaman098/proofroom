@@ -11,6 +11,7 @@ test('reverification retains changed revisions across repeated approval cycles',
   const previousApproval = state.approval;
   state = reducer(state, {type: 'CHANGE'});
   const changedRevision = fingerprint(state);
+  assert.equal(state.lastApproval, previousApproval, 'history retains the previously approved revisions');
   assert.notEqual(changedRevision, previousApproval);
   state = reducer(state, {type: 'REVERIFY'});
   assert.equal(fingerprint(state), changedRevision);
