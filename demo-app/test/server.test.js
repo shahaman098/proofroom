@@ -96,6 +96,28 @@ describe('POST /api/checkout — quantity validation', () => {
     const mouse = products.body.find((p) => p.id === 'mouse');
     expect(mouse.stock).toBe(12); // must be unchanged
   });
+
+  // Adversarial regression: mixed cart — valid first item, invalid second item.
+  // The fix must reject the entire order (not just skip the bad item) and must
+  // NOT deduct stock for the valid item that appeared before the invalid one.
+  // Without the two-pass structure (validate-all, then deduct-all), a naive
+  // implementation could deduct mouse stock before it hits the bad hub qty.
+  //   items: [{mouse, qty:2}, {hub, qty:-1}]
+  //   Expected: 400, mouse.stock stays 12 (not 10).
+  test('mixed cart: rejects entire order and leaves stock untouched when second item has invalid qty', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'mouse', qty: 2 }, { id: 'hub', qty: -1 }] });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/quantity|qty/i);
+    // hub is the invalid item — error should identify it
+    expect(res.body.error).toMatch(/hub/i);
+    // mouse stock must NOT have been deducted before the rejection
+    const products = await request(freshApp).get('/api/products');
+    const mouse = products.body.find((p) => p.id === 'mouse');
+    expect(mouse.stock).toBe(12);
+  });
 });
 
 describe('POST /api/checkout — tax on discounted total', () => {
