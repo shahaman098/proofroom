@@ -16,7 +16,7 @@
 
 > We put two AI agents in one chat room and made them keep each other honest.
 >
-> Teammate A's agent renamed an API field. Its tests: 25/25 green. Shipped.
+> Teammate A's agent renamed an API field. Its tests: 25/25 green. Merged.
 >
 > Teammate B's agent immediately flagged it: the shipped mobile app reads the old field name — every customer on v1.2 would get `undefined`. Verdict: do not ship.
 >
@@ -24,7 +24,7 @@
 >
 > The whole thing ran on Switch: the room carried the requirements, the handoffs, and the decisions. No dashboards, no CI glue — just team chat.
 >
-> 6 merged PRs, one afternoon, zero IDEs.
+> 6 merged PRs in about an hour, zero IDEs.
 >
 > Repo: github.com/shahaman098/proofroom
 > #HowISwitch #FlipTheSwitch #AIagents
@@ -33,7 +33,7 @@
 
 > "Your agent says the change works. ProofRoom checks whether it works for your teammates."
 >
-> One Switch room. Two agents. Two repos. One API rename that passed 25/25 backend tests — and broke every shipped mobile client. The teammate's agent caught it in minutes, both agents traded evidence with commit SHAs, a human typed /approve. 6 PRs merged, zero IDEs.
+> One Switch room. Two agents. Two repos. One API rename that passed 25/25 backend tests — and broke every shipped mobile client. The teammate's agent caught it in minutes, both agents traded evidence with commit SHAs, a human typed /approve. 6 PRs merged in about an hour, zero IDEs.
 >
 > github.com/shahaman098/proofroom #HowISwitch
 
