@@ -1,57 +1,104 @@
-# Demo script v4 — ProofRoom (one take, under 4 minutes)
+# ProofRoom demo script (v5)
 
-> The existing `video/proofroom-demo.mp4` (3:18) predates the live panel and the
-> plain-language frontend. Re-record with this script so the video matches what
-> a judge will see when they run `./run-demo.sh`.
-> Everything shown ran live during the event; the room timestamps (GMT) prove it.
+Target length: about 3 min 15 s. About 440 spoken words at a calm 150 words per minute, plus pauses between beats.
 
-## Before recording
+How to record: read straight through, face to camera, in one take if you can. Leave about one second of silence between beats (marked `[BEAT]`). That gives me clean cut points. If you stumble, pause, repeat the sentence, and keep going; I'll cut to the clean take.
 
-- [ ] Terminal: `./run-demo.sh` running (backend on :3000, frontend on the Vite URL).
-- [ ] Browser tab 1: ProofRoom frontend (scroll to the top).
-- [ ] Browser tab 2: Switch Console → **#proofroom** room, scrolled to 01:30.
-- [ ] Browser tab 3: https://github.com/shahaman098/proofroom/pull/6
-- [ ] Port 5173 busy? Stop whatever holds it (`lsof -nP -iTCP:5173 -sTCP:LISTEN`) or open the Network URL Vite prints.
-- [ ] Restart the backend right before recording so stock is back to 12 / 8 / 5.
+Every `[SHOW]` line says what is on screen while you say the sentence. All of it is captured live from the real system. Nothing is mocked.
 
-## Beats
+---
 
-1. **Hook (15s)** — frontend title. *"Your agent says the change works. ProofRoom
-   checks whether it works for your teammates. Two teammates, two codebases, two
-   coding agents, one Switch room."*
+## BEAT 1: Hook (about 18 s)
 
-2. **The change (20s)** — scroll chapter 1. *"My agent renamed `total` to
-   `grandTotal`. 80 seconds, 25 of 25 tests pass. In the old world I ship it."*
+"Your coding agent says the change works. But does it work for your teammates? I'm Aman, and this is ProofRoom: two teammates, two coding agents, and one Switch room."
 
-3. **The break (45s)** — switch to the Switch room, show 01:33 → 01:38.
-   *"My teammate asked their checking agent to test it first, because the old
-   mobile app is already in the App Store. Verdict: do not ship. The old app
-   asks for `total`, and it's gone. My own tests were green because they'd been
-   rewritten to match."*
+[SHOW] GitHub repo page, README top. Then the Switch Console app on the #proofroom room.
 
-4. **See it happen for real (45s)** — frontend → **Try it on the real backend**.
-   Order 3 mice, Germany, SAVE20 → $62.05, old app works. Tick **Replay PR #5**
-   → *"Breaks: missing total."* Say it plainly: *"This is my actual backend. The
-   toggle removes one field, which is exactly what PR #5 did."*
+[BEAT]
 
-5. **The fix (30s)** — room at 01:38–01:39, then PR #6. *"A sentence from a human
-   became a failing test. The backend agent put the old field back next to the
-   new one: nothing removed. Its own words: the old contract had zero test
-   coverage."*
+## BEAT 2: The change (about 30 s)
 
-6. **The proof (30s)** — room at 01:43, then frontend **approval replay**: click
-   through to Approve. *"28 of 28 tests, 10 of 10 checks, against exact code
-   versions. A human says /approve."* Then click **Simulate a new change**:
-   *"If the code changes, the approval stops counting."*
+"Here's the room from the live run. At 01:30 I asked my backend agent to rename one field in the checkout response, total, to grandTotal. It finished in 80 seconds. And here's the code at that commit, with all 25 of its tests passing."
 
-7. **Why Switch (20s)** — Room Instructions. *"No dashboard, no CI integration.
-   The room carries the requirement, the evidence and the decision. Take Switch
-   away and the two agents can't talk."*
+[SHOW] Room scrolled to 01:30 (request) and 01:31 (agent reply with commit fd023c7). Terminal: `git show --stat fd023c7`, then the backend suite at that commit: `Tests: 25 passed, 25 total`.
 
-8. **Close (10s)** — *"Your agent says it works. ProofRoom checks whether it
-   works for your teammates."*
+[BEAT]
 
-## After the take
+## BEAT 3: The break (about 45 s)
 
-- Trim to under 4 minutes.
-- Upload (YouTube unlisted), then paste the link into the README's demo-video line.
+"Now my teammate's side. They asked a second agent to check the change before the mobile release, because the old version 1.2 app is already shipped. At 01:38 the verdict came back: do not ship. Let me prove it. This is my backend at that commit. I send a checkout request. The new field, grandTotal, is there. The old field, total, is gone. And here is the client contract suite against it: four of five tests fail. My own suite was green. This one is red."
+
+[SHOW] Room: 01:33 request, 01:38 verdict card. Terminal: start the backend at fd023c7 on a spare port; `curl` the checkout and pipe through `jq` to show `total` is null and `grandTotal` is 26.34; run the client contract suite: `4 failed, 1 passed`.
+
+[BEAT]
+
+## BEAT 4: Why the tests missed it (about 30 s)
+
+"Why was my suite green? The one test that read total had been rewritten to read grandTotal in the same commit. So the verifier added a regression test. Here it is. On my change it fails: expected total to be defined, received undefined. On the fix, it passes."
+
+[SHOW] Terminal: `git show fe4c9c3` (the test). Run that test file at fd023c7: `1 failed, 25 passed`. Run it at b13234f: `26 passed`.
+
+[BEAT]
+
+## BEAT 5: The fix (about 30 s)
+
+"I asked my agent to keep total as a deprecated alias, add a version header, and add tests for both. That's commit b13234f. Here's the diff: total is back next to grandTotal, and the header is set. Nothing was removed. The suite now has 28 tests, and all 28 pass."
+
+[SHOW] Room 01:38 to 01:39 messages. Terminal: `git show b13234f -- demo-app/server.js`; then `Tests: 28 passed, 28 total`.
+
+[BEAT]
+
+## BEAT 6: Clear, then approve (about 25 s)
+
+"The verifier then re-ran everything against the exact commits and reported clear: twenty-eight of twenty-eight tests and ten of ten contract probes. Here's the client suite against the fixed backend: five of five. Then a human typed approve."
+
+[SHOW] Room: 01:43 CLEAR verdict card, 01:45 `/approve`. Terminal: client contract suite against b13234f: `5 passed, 5 total`.
+
+[BEAT]
+
+## BEAT 7: The frontend on the real backend (about 45 s)
+
+"I also built a frontend that talks to this real backend. I'll order three mice to Germany with the code SAVE20. The backend answers: sixty-two oh five, with the tax and shipping split out. The old mobile app check passes. Now I'll tick replay PR number 5. That removes the total field from this same response, locally, just as PR 5 did. The old app breaks. Missing: total."
+
+[SHOW] Browser at the frontend, "Try it on the real backend" panel. Cart: 3 mice, Germany, SAVE20, place order, `HTTP 200`, `$62.05`, "Works". Tick the toggle: "Breaks: missing total". Briefly show the raw response.
+
+[BEAT]
+
+## BEAT 8: Why Switch (about 25 s)
+
+"This only works because of Switch. The room's instructions say who owns what and who can merge. And agents only take orders from their linked owner. Here, at 00:30, an unlinked account asked my agent for a fix, and it declined. The same request from the linked account was accepted."
+
+[SHOW] Switch Console room Instructions. Room at 00:30: the declined message, then 00:36.
+
+[BEAT]
+
+## BEAT 9: Close (about 12 s)
+
+"Your agent says it works. ProofRoom checks whether it works for your teammates. Clone the repo and run one script to try it yourself."
+
+[SHOW] README quick start on GitHub, then `./run-demo.sh` printing the backend and frontend URLs.
+
+---
+
+## Evidence map (every claim, and where it is proven on screen)
+
+| Claim in the narration | Proven by |
+|---|---|
+| Rename took 80 seconds, commit `fd023c7`, 25 tests | Room message 01:31 ("Worked for 1m 20s", commit SHA); live `npm test` at `fd023c7`: 25 passed |
+| Verdict "do not ship" at 01:38 | Room verdict card, 01:38 |
+| `total` is gone, `grandTotal` present | Live `curl` against the backend at `fd023c7` |
+| 4 of 5 client tests fail | Live client contract suite run |
+| Old test was rewritten in the same commit | `git show fd023c7` diff and the verdict card's explanation |
+| Regression test fails then passes | Live runs of the `fe4c9c3` test at `fd023c7` and `b13234f` |
+| Fix is alias plus header, 28 tests | `git show b13234f` diff; live `npm test`: 28 passed |
+| CLEAR, 10 of 10 probes, then `/approve` | Room cards at 01:43 and 01:45. The 10 probes are the agent's own report, so the script says "reported" |
+| 5 of 5 client tests on the fix | Live client suite run |
+| $62.05 for 3 mice, DE, SAVE20 | Live panel on the real backend |
+| Replay PR 5 breaks the old app | Toggle in the live panel. The script says it removes the field locally |
+| Unlinked account declined at 00:30 | Room message at 00:30 and 00:36 |
+
+## Things deliberately not claimed
+
+- Anything about CI passing on GitHub (the workflows have not run there yet).
+- Any statistic that is not shown on screen.
+- That the approval or room-replay parts of the frontend are live. They are replays and the narration does not call them live.

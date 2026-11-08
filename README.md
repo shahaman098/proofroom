@@ -4,8 +4,6 @@ A change can pass every test in its own repo and still break someone else's code
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch), Best Business Workflow track.
 
-[Watch the demo (3m40s)](https://github.com/shahaman098/proofroom/releases/download/demo-v2/proofroom-demo-v2.mp4)
-
 ## What happened
 
 Two teammates, one Switch room, two existing agents:
