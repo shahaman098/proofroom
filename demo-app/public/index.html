@@ -22,6 +22,12 @@
     <strong>Cart:</strong> <span id="cart-summary">empty</span>
     <div style="margin-top:10px">
       <input id="code" placeholder="Discount code (e.g. SAVE20)" />
+      <select id="region">
+        <option value="US">US (7%)</option>
+        <option value="UK">UK (20%)</option>
+        <option value="DE" selected>Germany (19%)</option>
+        <option value="FR">France (20%)</option>
+      </select>
       <button onclick="checkout()">Checkout</button>
     </div>
     <div id="result"></div>
@@ -45,11 +51,11 @@
       const items = Object.keys(cart).map(id => ({ id, qty: cart[id] }));
       const res = await fetch('/api/checkout', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, discountCode: document.getElementById('code').value.trim() || null }),
+        body: JSON.stringify({ items, discountCode: document.getElementById('code').value.trim() || null, region: document.getElementById('region').value }),
       });
       const data = await res.json();
       const el = document.getElementById('result');
-      if (res.ok) el.textContent = `✅ ${data.orderId} charged $${data.total}` + (data.discountApplied ? ` (code ${data.discountApplied})` : '');
+      if (res.ok) el.textContent = `✅ ${data.orderId} — subtotal $${data.subtotal}, discount −$${data.discount}, tax $${data.tax}, shipping $${data.shipping}, TOTAL $${data.total}` + (data.discountApplied ? ` (code ${data.discountApplied}, ${data.regionName})` : '');
       else { el.textContent = '❌ ' + data.error; el.classList.add('error'); }
     }
   </script>
