@@ -122,3 +122,15 @@ so the demo is reproducible for judges:
 
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch).
 Powered by [Switch](https://github.com/sandbox-quantum/switch) 🧡
+
+## ProofRoom frontend
+
+The ProofRoom concept frontend is in [`proofroom/`](proofroom/README.md). It includes a responsive landing page and interactive cross-repository verification demo with requirement changes, approval gating, and stale-approval invalidation.
+
+```bash
+cd proofroom
+npm ci
+npm run dev
+```
+
+Run `npm test` for approval-state regression tests and `npm run build` for the production bundle. Requires Node 20.19+ or 22.12+. All ProofRoom activity is simulated; it is not connected to live Switch rooms, GitHub, or test runners.

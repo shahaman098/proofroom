@@ -1,0 +1,1 @@
+{"name":"proofroom","version":"1.0.0","type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","test":"node --test src/model.test.js"},"dependencies":{"react":"^19.0.0","react-dom":"^19.0.0","vite":"^6.0.0"}}
