@@ -84,4 +84,27 @@ describe('POST /api/checkout — tax on discounted total', () => {
     // Buggy:   Math.round(5997 * 0.19) = 1139 cents = €11.39  (€2.27 overcharge)
     expect(res.body.tax).toBe(9.12);
   });
+
+  // Adversarial regression: flat discount code (WELCOME5) + FR VAT (20%).
+  // The existing test only covers a percent code (SAVE20) in DE. This test
+  // catches any code path that forgets to use afterDiscount for flat codes,
+  // or for regions other than DE.
+  //   kbd subtotal : 4950 cents (€49.50)
+  //   WELCOME5 flat -$5 → afterDiscount : 4450 cents (€44.50)
+  //   Correct tax (20% of 4450): Math.round(4450*0.20) = 890 cents = €8.90
+  //   Buggy tax   (20% of 4950): Math.round(4950*0.20) = 990 cents = €9.90  ← €1.00 overcharge
+  test('FR tax uses after-discount base for a flat discount code (WELCOME5)', async () => {
+    const freshApp = require('../server');
+    const res = await request(freshApp)
+      .post('/api/checkout')
+      .send({ items: [{ id: 'kbd', qty: 1 }], discountCode: 'WELCOME5', region: 'FR' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.subtotal).toBe(49.50);
+    expect(res.body.discount).toBe(5.00);
+    // Correct: €8.90; buggy pre-fix path would return €9.90 (€1.00 overcharge).
+    expect(res.body.tax).toBe(8.90);
+    // Grand total must reconcile: 44.50 + 8.90 + 4.95 = 58.35
+    expect(res.body.total).toBe(58.35);
+  });
 });
