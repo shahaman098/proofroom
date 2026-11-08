@@ -104,7 +104,7 @@ clean clone.
 
 ## Reproduce our setup (10 minutes)
 
-1. Install **Switch Console**: [docs](https://docs.switchagents.ai/switch-rooms/getting-started/install-switch-console.html) → **Get started** → **On this computer** → **Start** (starts the local server + bundled Mattermost).
+1. Install **Switch Console**: [docs](https://docs.switchagents.ai/switch-rooms/getting-started/install-switch-console) → **Get started** → **On this computer** → **Start** (starts the local server + bundled Mattermost).
 2. Choose **Claude Code** as agent provider (your own key/subscription).
 3. Create a room, paste [`workflow/room-instructions.md`](workflow/room-instructions.md) into Instructions, add both agents.
 4. Backend: `cd demo-app && npm install && npm start` → http://localhost:3000.
