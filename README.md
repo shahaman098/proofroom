@@ -22,7 +22,7 @@ repositories** — into **one shared Switch room**:
 | Teammate | Repo | Agent |
 |---|---|---|
 | **A — backend** | this repo (QuickCart API, `demo-app/`) | `@ship-engineer.aman` |
-| **B — clients** | [`shahaman098/proofroom-web`](https://github.com/shahaman098/proofroom-web) (web + **legacy mobile v1.2** binaries pinned to the API contract) | `@blast-radius.aman` |
+| **B — clients** | [`clients/`](clients/) in this repo (web + **legacy mobile v1.2** binaries pinned to the API contract) | `@blast-radius.aman` |
 
 Switch carries their **requirements, handoffs and decisions** in one
 conversation. This demo ran **live during the event** (all timestamps GMT):
@@ -86,7 +86,7 @@ clean clone.
 2. Choose **Claude Code** as agent provider (your own key/subscription).
 3. Create a room, paste [`workflow/room-instructions.md`](workflow/room-instructions.md) into Instructions, add both agents.
 4. Backend: `cd demo-app && npm install && npm start` → http://localhost:3000.
-   Client: `cd proofroom-web && npm install` and run its contract suite with
+   Client: `cd clients && npm install` and run its contract suite with
    `API_BASE=http://localhost:3000 npm test`.
 5. Ask teammate A's agent for an API change. Watch teammate B's agent catch
    what your own suite can't.
@@ -106,7 +106,7 @@ own team, you need three things — all in this repo:
 1. **The contract** — [`workflow/room-instructions.md`](workflow/room-instructions.md):
    two agents, separated duties (fixer never merges, verifier never writes
    the fix, evidence against exact commit SHAs, human approves).
-2. **The client contract suite** — [`proofroom-web`](https://github.com/shahaman098/proofroom-web):
+2. **The client contract suite** — [`clients/`](clients/):
    pinned expectations for every client you can't re-release (shipped mobile
    binaries, third-party integrations). This is the tripwire that catches
    cross-repo breakage your own suite can't see.

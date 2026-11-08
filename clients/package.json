@@ -1,0 +1,11 @@
+{
+  "name": "proofroom-web",
+  "version": "1.2.0",
+  "description": "Web + legacy mobile clients for the QuickCart API — the second repo in ProofRoom's cross-repo compatibility demo",
+  "scripts": {
+    "test": "jest --runInBand"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
