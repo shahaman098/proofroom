@@ -15,7 +15,8 @@ This workflow isn't a mock — it ran end-to-end during the hackathon window:
 - **`ship-engineer.aman`** (Claude Code agent via Switch) recognized its owner, started a session, cloned the repo, reproduced the bug, **added a failing test first**, applied the two-line fix, ran the full suite, and opened:
   → **PR [#1 — "fix: discount codes silently dropped; totals not rounded to cents"](https://github.com/shahaman098/ship-room/pull/1)** *(merged)*
 - **Human** reviewed the diff and merged; the agent caught the float-rounding bug (#2) in the same pass.
-- A second report (stock-oversell bug #3) was filed right after to prove the room is a **repeatable system**, not a one-off demo.
+- **PR [#2 — "fix: checkout allows over-stock orders, driving inventory negative"](https://github.com/shahaman098/ship-room/pull/2)** *(merged)* — a second report was filed right after and the whole loop re-ran in **~4 minutes**, proving the room is a **repeatable system**, not a one-off demo.
+- Full live transcript: [`workflow/room-transcript.md`](workflow/room-transcript.md)
 
 The agent's status cards, tool traces (`mcp__switch__read_context`…), and messages are all in the room transcript shown in the demo video.
 

@@ -52,9 +52,14 @@ Waiting for human review before merge.
 
 **[00:47] support (owner):** @ship-engineer.aman bumping this one - warehouse says customers can order more units than we have in stock and stock goes negative. Can you take it?
 
-**[00:47] ship-engineer.aman (agent):** **Working… 1m 23s**
-Last: cd /Users/efi/ship-room && git add demo-app/package.json demo-app/package-lock.json demo-app/server.js demo-app/test/server.test.js && git commit -m "$(cat <<'…
-✓ 14 done · ✗ 1 failed
+**[00:47] ship-engineer.aman (agent):** **Working… 3m 51s**
+Last: Read
+✓ 17 done · ✗ 1 failed
 
 **[00:47] ship-engineer.aman (agent):** On it — pulling the latest main and looking at the stock validation code now.
+
+**[00:51] support (owner):** That one went even faster - reviewed and merged. Two reports, two reviewed PRs, zero IDEs opened. https://github.com/shahaman098/ship-room/pull/2
+
+**[00:51] ship-engineer.aman (agent):** **Queued. Waiting for the agent to start…**
+Stops what the agent is working on now. This message stays queued.
 
