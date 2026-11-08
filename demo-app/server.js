@@ -17,17 +17,24 @@ const PRODUCTS = [
 
 app.get('/api/products', (req, res) => res.json(PRODUCTS));
 
-// BUG #3 (seeded): no stock validation — customers can order more units
-// than exist, and stock silently goes negative.
 app.post('/api/checkout', (req, res) => {
   const { items, discountCode } = req.body || {};
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Cart is empty' });
   }
 
+  // Validate products and stock for all items before deducting anything,
+  // so a failed order never partially reduces inventory.
   for (const item of items) {
     const product = PRODUCTS.find((p) => p.id === item.id);
     if (!product) return res.status(400).json({ error: `Unknown product: ${item.id}` });
+    if (item.qty > product.stock) {
+      return res.status(400).json({ error: `Insufficient stock for ${item.id}: requested ${item.qty}, available ${product.stock}` });
+    }
+  }
+
+  for (const item of items) {
+    const product = PRODUCTS.find((p) => p.id === item.id);
     product.stock -= item.qty;
   }
 
